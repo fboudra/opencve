@@ -2,9 +2,9 @@ import logging
 
 import pendulum
 from airflow.configuration import conf
-from airflow.decorators import dag
-from airflow.operators.python import ShortCircuitOperator
-from airflow.utils.task_group import TaskGroup
+from airflow.sdk import dag
+from airflow.providers.standard.operators.python import ShortCircuitOperator
+from airflow.sdk import TaskGroup
 from includes.operators.fetch_operator import GitFetchOperator
 from includes.operators.process_kb_operator import ProcessKbOperator
 from includes.tasks.notifications import (

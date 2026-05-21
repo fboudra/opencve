@@ -1,7 +1,5 @@
-import json
 import logging
-import pathlib
-from unittest.mock import patch, mock_open, MagicMock
+from unittest.mock import patch, MagicMock
 
 from email.mime.multipart import MIMEMultipart
 import openai

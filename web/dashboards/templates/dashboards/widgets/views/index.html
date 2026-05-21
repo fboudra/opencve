@@ -1,41 +1,48 @@
 {% if views %}
-<div class="nav nav-pills nav-stacked no-padding">
-    {% for view in views %}
-    <div class="view-item">
-        <div class="view-header">
-            <span class="view-title">
-                {% if view.privacy == 'public' %}
-                <i class="fa fa-globe" data-toggle="tooltip" data-container="body" title="Public view"></i>
-                {% else %}
-                <i class="fa fa-lock" data-toggle="tooltip" data-container="body" title="Private view"></i>
-                {% endif %}
-                {{ view.name }}
-            </span>
-            <a href="{% url 'cves' %}?q={{ view.query }}" class="btn btn-default btn-xs" data-toggle="tooltip" data-container="body" title="Run this query"><i class="fa fa-play"></i></a>
-        </div>
-        <code>{{ view.query }}</code>
+    <div class="nav nav-pills nav-stacked no-padding">
+        {% for view in views %}
+            <div class="view-item">
+                <div class="view-header">
+                    <span class="view-title">
+                        {% if view.privacy == 'public' %}
+                            <i class="fa fa-globe" data-toggle="tooltip" data-container="body" title="Public view"></i>
+                        {% else %}
+                            <i class="fa fa-lock" data-toggle="tooltip" data-container="body" title="Private view"></i>
+                        {% endif %}
+                        {{ view.name }}
+                    </span>
+                    <a
+                        href="{% url 'cves' %}?q={{ view.query }}"
+                        class="btn btn-secondary btn-xs"
+                        data-toggle="tooltip"
+                        data-container="body"
+                        title="Run this query"
+                    ><i class="fa fa-play"></i></a>
+                </div>
+                <code>{{ view.query }}</code>
+            </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
 {% else %}
-<p class="alert alert-info">
-    You don’t have any saved views yet.
-    <br />
-    Create one by <a href="{% url 'create_view' org_name=request.current_organization.name %}">clicking here</a> to save your custom query.
-</p>
+    <p class="alert alert-info">
+        You don’t have any saved views yet.
+        <br>
+        Create one by <a href="{% url 'create_view' org_name=request.current_organization.name %}">clicking here</a> to
+        save your custom query.
+    </p>
 {% endif %}
 
 <style>
-.view-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
-}
+    .view-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
 </style>
 
 <script>
-$(function() {
-    $('.view-item [data-toggle="tooltip"]').tooltip();
-});
+    $(function() {
+        $('.view-item [data-toggle="tooltip"]').tooltip();
+    });
 </script>

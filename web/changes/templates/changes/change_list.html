@@ -1,90 +1,107 @@
 {% extends "base.html" %}
-{% load opencve_extras %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags opencve_extras %}
 
-{% block title%}CVEs Activity - {{ block.super }}{% endblock %}
-{% block navbar_title%}CVEs Activity{% endblock %}
+{% block title %}CVEs Activity - {{ block.super }}{% endblock %}
+
+{% block navbar_title %}CVEs Activity{% endblock %}
 
 {% block content %}
-
-
-<section class="content">
-    <div class="row">
-        <div class="col-md-12">
-            {% include "messages.html" %}
-        </div>
-        <div class="col-md-8">
-            <div class="box box-primary">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Vulnerabilities Activity</h3>
-                    {% if user.settings.activities_view == 'subscriptions' %}
-                    <div class="box-tools pull-right">
-                        <small class="label label-default"><i class="fa fa-filter"></i> subscriptions</small>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="box-body">
-                    {% if not changes %}
-                    <p class="alert alert-info">No activity.</p>
-                    {% else %}
-                    <ul class="timeline timeline-inverse">
-                        {% for change in changes %}
-                        <li class="time-label">
-                            {% ifchanged change.created_at|date:"d b Y" %}
-                            <span class="bg-blue bg-opencve">
-                                {{ change.created_at|date:"d b Y" }}
-                            </span>
-                            {% endifchanged %}
-                        </li>
-
-                        <li>
-                            {% if change|is_new_cve %}
-                            <i class="fa fa-plus bg-red"></i>
-                            {% else %}
-                            <i class="fa fa-edit bg-blue"></i>
-                            {% endif %}
-                            <div class="timeline-item">
-                                <span class="time" title="{{ change.created_at|date:'d b Y, H:i' }}"><i class="fa fa-clock-o"></i> {{ change.created_at|date:"H:i" }}</span>
-                                <h3 class="timeline-header"><a href="{% url 'cve' cve_id=change.cve.cve_id %}">{{ change.cve.cve_id }}</a> <i>{% if change|is_new_cve %}is a new CVE{% else %}has changed{% endif %}</i> <a href="{% url 'change' cve_id=change.cve.cve_id id=change.id %}" class="btn-json-diff" data-toggle="tooltip" data-container="body" title="View the change details"><i class="fa fa-code"></i></a></h3>
-                                <div class="timeline-body">
-                                    <p>{{ change.cve.description }}</p>
-                                    {% include 'changes/change_events.html' %}
-                                </div>
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                {% include "messages.html" %}
+            </div>
+            <div class="col-md-8">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Vulnerabilities Activity</h3>
+                        {% if user.settings.activities_view == 'subscriptions' %}
+                            <div class="box-tools float-right">
+                                <small class="label label-default"><i class="fa fa-filter"></i> subscriptions</small>
                             </div>
-                        </li>
-                        {% endfor %}
-
-                    </ul>
-                    {% endif %}
-
-                    {% if changes %}
-                    <div class="center">
-                        <ul class="pagination">
-                            {% if page_obj.has_previous %}
-                                <li class="previous"><a href="{% url 'activity'%}?{% query_params_url 'page' page_obj.previous_page_number %}">« prev </a></li>
-                            {% endif %}
-                            {% if page_obj.has_next %}
-                                <li class="previous"><a href="{% url 'activity'%}?{% query_params_url 'page' page_obj.next_page_number %}">next »</a></li>
-                            {% endif %}
-                        </ul>
+                        {% endif %}
                     </div>
-                    {% endif %}
+                    <div class="box-body">
+                        {% if not changes %}
+                            <p class="alert alert-info">No activity.</p>
+                        {% else %}
+                            <ul class="timeline timeline-inverse">
+                                {% for change in changes %}
+                                    <li class="time-label">
+                                        {% ifchanged change.created_at|date:"d b Y" %}
+                                            <span class="bg-blue bg-opencve">
+                                                {{ change.created_at|date:"d b Y" }}
+                                            </span>
+                                        {% endifchanged %}
+                                    </li>
+
+                                    <li>
+                                        {% if change|is_new_cve %}
+                                            <i class="fa fa-plus bg-red"></i>
+                                        {% else %}
+                                            <i class="fa fa-edit bg-blue"></i>
+                                        {% endif %}
+                                        <div class="timeline-item">
+                                            <span class="time" title="{{ change.created_at|date:'d b Y, H:i' }}"><i
+                                                    class="fa fa-clock-o"
+                                                ></i> {{ change.created_at|date:"H:i" }}</span>
+                                            <h3 class="timeline-header">
+                                                <a
+                                                    href="{% url 'cve' cve_id=change.cve.cve_id %}"
+                                                >{{ change.cve.cve_id }}</a> <i>{% if change|is_new_cve %}is a new
+                                                        CVE{% else %}has changed{% endif %}</i> <a
+                                                    href="{% url 'change' cve_id=change.cve.cve_id id=change.id %}"
+                                                    class="btn-json-diff"
+                                                    data-toggle="tooltip"
+                                                    data-container="body"
+                                                    title="View the change details"
+                                                ><i class="fa fa-code"></i></a>
+                                            </h3>
+                                            <div class="timeline-body">
+                                                <p>{{ change.cve.description }}</p>
+                                                {% include 'changes/change_events.html' %}
+                                            </div>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+
+                        {% if changes %}
+                            <div class="center">
+                                <ul class="pagination">
+                                    {% if page_obj.has_previous %}
+                                        <li class="previous">
+                                            <a
+                                                href="{% url 'activity' %}?{% query_params_url 'page' page_obj.previous_page_number %}"
+                                            >« prev
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    {% if page_obj.has_next %}
+                                        <li class="previous">
+                                            <a
+                                                href="{% url 'activity' %}?{% query_params_url 'page' page_obj.next_page_number %}"
+                                            >next »</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="box box-primary">
+                    <div class="box-header">
+                        <h4 class="box-title">Dashboard Settings</h4>
+                    </div>
+                    <div id="dashboard-settings">
+                        <div class="box-body">{% crispy form %}</div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-4">
-             <div class="box box-primary">
-                <div class="box-header">
-                    <h4 class=" box-title">Dashboard Settings</h4>
-                </div>
-                <div id="dashboard-settings">
-                    <div class="box-body">{% crispy form %}</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-{% endblock %}
+    </section>
+{% endblock content %}

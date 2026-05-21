@@ -41,12 +41,12 @@ def test_list_vendors_case_insensitive(db, create_cve, auth_client):
     response = client.get(f"{reverse('vendors')}?search=Git-scm")
     soup = BeautifulSoup(response.content, features="html.parser")
     content = soup.find("table", {"id": "table-vendors"}).find_all("td")
-    assert content[0].text == "Git-scm"
+    assert content[0].get_text(strip=True) == "Git-scm"
 
     response = client.get(f"{reverse('vendors')}?search=GIT")
     soup = BeautifulSoup(response.content, features="html.parser")
     content = soup.find("table", {"id": "table-vendors"}).find_all("td")
-    assert content[0].text == "Git-scm"
+    assert content[0].get_text(strip=True) == "Git-scm"
     content = soup.find("table", {"id": "table-products"}).find_all("td")
     assert content[0].text.strip() == "Git"
     assert content[1].text.strip() == "Git-scm"
@@ -1203,7 +1203,7 @@ def test_cve_detail_enrichment_panel(
     soup = BeautifulSoup(response.content, features="html.parser")
     enrichment_box = get_enrichment_box(soup)
     box_body = enrichment_box.find("div", {"class": "box-body"})
-    assert box_body.text.strip() == "Updated: 2025-07-23T20:19:23Z"
+    assert " ".join(box_body.text.split()) == "Updated: 2025-07-23T20:19:23Z"
 
 
 @patch("cves.models.Cve.enrichment_json", new_callable=PropertyMock)

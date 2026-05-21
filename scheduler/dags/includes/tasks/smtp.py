@@ -4,7 +4,7 @@ import datetime
 
 import aiosmtplib
 from airflow.configuration import conf
-from airflow.decorators import task
+from airflow.sdk import task
 
 from includes.utils import get_smtp_conf, get_smtp_message
 

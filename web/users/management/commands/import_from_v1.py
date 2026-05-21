@@ -135,7 +135,6 @@ class Command(BaseCommand):
 
         msg = f"Found {self.blue(len(v1_users))} users to migrate, adding them in database"
         with self.timed_operation(msg):
-
             for v1_user in v1_users:
                 user_id = v1_user[0]
 

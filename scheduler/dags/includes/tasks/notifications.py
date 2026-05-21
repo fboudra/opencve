@@ -4,8 +4,8 @@ import logging
 
 import aiohttp
 from airflow.configuration import conf
-from airflow.decorators import task
-from airflow.exceptions import AirflowSkipException
+from airflow.sdk import task
+from airflow.sdk.exceptions import AirflowSkipException
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.redis.hooks.redis import RedisHook
 from includes.constants import SQL_PROJECT_WITH_NOTIFICATIONS
@@ -100,8 +100,7 @@ def send_notifications(notifications, **context):
     changes_details = redis_hook.json().get(changes_details_key)
     logger.debug(f"{changes_details_key}: %s", changes_details)
 
-    loop = asyncio.get_event_loop()
-    result = loop.run_until_complete(
+    result = asyncio.run(
         execute_coroutines(notifications, changes_details, {"start": start, "end": end})
     )
     logger.debug("Notifications results: %s", result)
@@ -205,7 +204,7 @@ def filter_changes(notification, changes, changes_details):
 
         # Exclude change if types don't match notifications ones
         if not notification_types or not any(
-            (True for x in notification_types if x in change_types)
+            True for x in notification_types if x in change_types
         ):
             continue
 

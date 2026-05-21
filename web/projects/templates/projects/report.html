@@ -2,117 +2,121 @@
 {% load opencve_extras %}
 
 {% block title %}Report for {{ object.report.day|date:'M, d Y' }} - {{ block.super }}{% endblock %}
+
 {% block navbar_title %}{{ project.name }} - Report for {{ object.report.day|date:'M, d Y' }}{% endblock %}
 
 {% block content_project %}
-
-
-
-<div class="row">
-    {% if object.report.ai_summary %}
-    <div class="col-md-12">
-        <div class="box box-primary">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-magic"></i> AI Summary</h3>
-            </div>
-            <div class="box-body">
-                <div class="callout callout-info">
-                    <p>
-                        AI Summary uses a <strong>Large Language Model</strong> to automaticaly generates a human-readable summary of each report. This helps you quickly understand the most critical vulnerabilities.
-                    </p>
-                </div>
-                <div class="callout callout-note">
-                    {{ object.report.ai_summary|safe|linebreaksbr }}
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-    <div class="col-md-12">
-        <div class="tabs-vertical-env tabs-report">
-            <ul class="nav tabs-vertical">
-                {% for change in object.changes|dictsortreversed:'score' %}
-                <li class="{% if forloop.first %}active{% endif %}">
-                    <a aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" data-toggle="tab"  href="#{{change.cve.cve_id}}">
-                        {{change.cve.cve_id}}
-                        {% if change.cve.cvssV3_1 %}
-                        <span class="label label-{{ change.cve.cvssV3_1.score|cvss_level }}">{{ change.cve.cvssV3_1.score }}</span>
-                        {% else %}
-                        <span class="label label-default">N/A</span>
-                        {% endif %}
-                    </a>
-                </li>
-                {% endfor %}
-            </ul>
-            <div class="tab-content" style="width: 100%;">
-                {% for change in object.changes|dictsortreversed:'score' %}
-                <div id="{{change.cve.cve_id}}" class="tab-pane {% if forloop.first %}active{% endif %}">
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h3 style="margin-top: 0;">
-                                {{ change.cve.cve_id }}
-                                <small><a href="{% url 'cve' cve_id=change.cve.cve_id%}" target="_blank"><i class="fa fa-external-link"></i></a></small>
-                            </h3>
-
-                            {% if change.cve.title %}
-                            <p><strong>Title</strong></p>
-                            <div class="callout callout-note">
-                                {{ change.cve.title|linebreaksbr }}
-                            </div>
-                            {% endif %}
-
-                            {% if change.cve.description %}
-                            <p><strong>Description</strong></p>
-                            <div class="callout callout-note">
-                                {{ change.cve.description|linebreaksbr }}
-                            </div>
-                            {% endif %}
-
+    <div class="row">
+        {% if object.report.ai_summary %}
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-magic"></i> AI Summary</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="callout callout-info">
+                            <p>
+                                AI Summary uses a <strong>Large Language Model</strong> to automatically generates a
+                                human-readable summary of each report. This helps you quickly understand the most
+                                critical vulnerabilities.
+                            </p>
                         </div>
-                        <div class="col-md-12">
-                            <h3>Vendors & Products impacted</h3>
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Vendors</th>
-                                        <th>Products</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="cve-header">
-                                        <td class="col-md-6">{{ change.cve.vendors|vendors_excerpt }}</td>
-                                        <td class="col-md-6">{{ change.cve.vendors|products_excerpt }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="callout callout-note">
+                            {{ object.report.ai_summary|safe|linebreaksbr }}
                         </div>
                     </div>
+                </div>
+            </div>
+        {% endif %}
+        <div class="col-md-12">
+            <div class="tabs-vertical-env tabs-report">
+                <ul class="nav tabs-vertical">
+                    {% for change in object.changes|dictsortreversed:'score' %}
+                        <li class="{% if forloop.first %}active{% endif %}">
+                            <a
+                                aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+                                data-toggle="tab"
+                                href="#{{ change.cve.cve_id }}"
+                            >
+                                {{ change.cve.cve_id }}
+                                {% if change.cve.cvssV3_1 %}
+                                    <span
+                                        class="label label-{{ change.cve.cvssV3_1.score|cvss_level }}"
+                                    >{{ change.cve.cvssV3_1.score }}</span>
+                                {% else %}
+                                    <span class="label label-default">N/A</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="tab-content" style="width: 100%">
+                    {% for change in object.changes|dictsortreversed:'score' %}
+                        <div id="{{ change.cve.cve_id }}" class="tab-pane {% if forloop.first %}active{% endif %}">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h3 style="margin-top: 0">
+                                        {{ change.cve.cve_id }}
+                                        <small><a href="{% url 'cve' cve_id=change.cve.cve_id %}" target="_blank"><i
+                                                    class="fa fa-external-link"
+                                                ></i></a></small>
+                                    </h3>
 
-                    <h3>Changes</h3>
-                    {% for date, events in change.kb_changes|dictsortreversed:0 %}
-                    <p class="report-change-title"><i class="fa fa-clock-o"></i> {{ date|date:"r" }}</p>
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <th>Type</th>
-                            <th>Values Removed</th>
-                            <th>Values Added</th>
-                        </thead>
-                        <tbody>
-                        {% for event in events.data %}
-                            {% with template_name="changes/change_"|add:event.type|add:".html" %}
-                            {% include template_name %}
-                            {% endwith %}
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                                    {% if change.cve.title %}
+                                        <p><strong>Title</strong></p>
+                                        <div class="callout callout-note">
+                                            {{ change.cve.title|linebreaksbr }}
+                                        </div>
+                                    {% endif %}
+
+                                    {% if change.cve.description %}
+                                        <p><strong>Description</strong></p>
+                                        <div class="callout callout-note">
+                                            {{ change.cve.description|linebreaksbr }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-12">
+                                    <h3>Vendors & Products impacted</h3>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Vendors</th>
+                                                <th>Products</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="cve-header">
+                                                <td class="col-md-6">{{ change.cve.vendors|vendors_excerpt }}</td>
+                                                <td class="col-md-6">{{ change.cve.vendors|products_excerpt }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <h3>Changes</h3>
+                            {% for date, events in change.kb_changes|dictsortreversed:0 %}
+                                <p class="report-change-title"><i class="fa fa-clock-o"></i> {{ date|date:"r" }}</p>
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <th>Type</th>
+                                        <th>Values Removed</th>
+                                        <th>Values Added</th>
+                                    </thead>
+                                    <tbody>
+                                        {% for event in events.data %}
+                                            {% with template_name="changes/change_"|add:event.type|add:".html" %}
+                                                {% include template_name %}
+                                            {% endwith %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endfor %}
+                        </div>
                     {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
     </div>
-
-</div>
-
-{% endblock %}
+{% endblock content_project %}

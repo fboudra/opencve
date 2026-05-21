@@ -1,5 +1,4 @@
-{% load static %}
-{% load opencve_extras %}
+{% load opencve_extras static %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -7,21 +6,29 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>{% block title %}OpenCVE{% endblock %}</title>
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-        <meta name="description" content="{% block meta_description %}OpenCVE is the platform for tracking and managing CVEs. Stay updated on vulnerabilities, monitor your vendors, and protect your systems with ease.{% endblock %}">
+        <meta
+            name="description"
+            content="{% block meta_description %}OpenCVE is the platform for tracking and managing CVEs. Stay updated on vulnerabilities, monitor your vendors, and protect your systems with ease.{% endblock %}"
+        >
         <meta name="csrf-token" content="{{ csrf_token }}">
-        <link rel="canonical" href="{{ canonical_url }}" />
+        <link rel="canonical" href="{{ canonical_url }}">
         {% include 'styles.html' %}
     </head>
     <body class="hold-transition skin-blue skin-opencve sidebar-mini">
         <div class="wrapper">
             <header class="main-header">
-
                 <a href="{% url 'home' %}" class="logo">
-                    <span class="logo-lg"><img src="{% static 'img/logo_opencve_white.svg' %}" alt="Logo"/></span>
+                    <span class="logo-lg"><img src="{% static 'img/logo_opencve_white.svg' %}" alt="Logo"></span>
                 </a>
 
                 <nav class="navbar navbar-static-top">
-                    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button" aria-label="Toggle navigation">
+                    <a
+                        href="#"
+                        class="sidebar-toggle"
+                        data-toggle="push-menu"
+                        role="button"
+                        aria-label="Toggle navigation"
+                    >
                         <span class="sr-only">Toggle navigation</span>
                     </a>
                     <h1 class="navbar-title">{% block navbar_title %}{% endblock %}</h1>
@@ -29,21 +36,21 @@
                     <div class="navbar-custom-menu">
                         <ul class="nav navbar-nav">
                             {% if user.is_authenticated %}
-                            <li class="user user-menu">
-                                <a href="{% url 'settings_profile' %}">
-                                    <img src="{{ user.email | gravatar_url:30 }}" class="user-image" alt="User Image">
-                                    <span class="hidden-xs">{{ user.username }}</span>
-                                </a>
-                            </li>
+                                <li class="user user-menu">
+                                    <a href="{% url 'settings_profile' %}">
+                                        <img src="{{ user.email|gravatar_url:30 }}" class="user-image" alt="User Image">
+                                        <span class="hidden-xs">{{ user.username }}</span>
+                                    </a>
+                                </li>
                             {% else %}
-                            <li class="hidden-xs">
-                                <a href="{% url 'account_login' %}">Sign in</a>
-                            </li>
-                            {% if ENABLE_REGISTER %}
-                            <li class="hidden-xs">
-                                <a href="{% url 'account_signup' %}">Register</a>
-                            </li>
-                            {% endif %}
+                                <li class="hidden-xs">
+                                    <a href="{% url 'account_login' %}">Sign in</a>
+                                </li>
+                                {% if ENABLE_REGISTER %}
+                                    <li class="hidden-xs">
+                                        <a href="{% url 'account_signup' %}">Register</a>
+                                    </li>
+                                {% endif %}
                             {% endif %}
                         </ul>
                     </div>
@@ -53,54 +60,98 @@
             <aside class="main-sidebar">
                 <section class="sidebar">
                     {% if user.is_authenticated and request.current_organization %}
-                    <form action="#" method="get" class="sidebar-form">
-                        <select class="form-control select2-organizations" name="organization">
-                            {% for orga in request.user_organizations %}
-                            <option {% if request.current_organization == orga %} selected="selected" {% endif %} value="{{ orga.name }}">{{ orga.name }}</option>
-                            {% endfor  %}
-                        </select>
-                    </form>
+                        <form action="#" method="get" class="sidebar-form">
+                            <select class="form-control select2-organizations" name="organization">
+                                {% for orga in request.user_organizations %}
+                                    <option
+                                        {% if request.current_organization == orga %}
+                                            selected="selected"
+                                        {% endif %}
+                                        value="{{ orga.name }}"
+                                    >
+                                        {{ orga.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </form>
                     {% endif %}
                     <ul class="sidebar-menu" data-widget="tree">
                         <li class="header">MAIN NAVIGATION</li>
                         {% if user.is_authenticated %}
-                        <li class="{% is_active_link 'home' %}"><a href="{% url 'home' %}"><i class="fa fa-home"></i><span>Dashboard</span></a></li>
-                        {% if request.current_organization %}
-                        <li class="treeview {% is_active_link 'list_projects' 'create_project' 'edit_project' 'delete_project' 'project' 'notifications' 'create_notification' 'edit_notification' 'reports' 'report' 'subscriptions' 'project_vulnerabilities' %}">
-                            <a href="#">
-                                <i class="fa fa-rocket"></i>
-                                <span>Projects</span>
-                                <span class="pull-right-container">
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </span>
-                            </a>
-                            <ul class="treeview-menu">
-                                {% for project in request.current_organization.projects.all|dictsort:"name" %}
-                                {% if project.active %}
-                                <li class="{% is_active_project_link project.name %}"><a href="{% url 'project' org_name=request.current_organization.name project_name=project.name %}"><i class="fa fa-circle-o"></i> {{ project.name }}</a></li>
-                                {% endif %}
-                                {% endfor %}
-                                <li class="{% is_active_link 'list_projects' %}"><a href="{% url 'list_projects' org_name=request.current_organization.name %}"><i class="fa fa-edit"></i> Manage Projects</a></li>
-                            </ul>
+                            <li class="{% is_active_link 'home' %}">
+                                <a href="{% url 'home' %}"><i class="fa fa-home"></i><span>Dashboard</span></a>
+                            </li>
+                            {% if request.current_organization %}
+                                <li class="treeview {% is_active_link 'list_projects' 'create_project' 'edit_project' 'delete_project' 'project' 'notifications' 'create_notification' 'edit_notification' 'reports' 'report' 'subscriptions' 'project_vulnerabilities' %}">
+                                    <a href="#">
+                                        <i class="fa fa-rocket"></i>
+                                        <span>Projects</span>
+                                        <span class="float-right-container">
+                                            <i class="fa fa-angle-left float-right"></i>
+                                        </span>
+                                    </a>
+                                    <ul class="treeview-menu">
+                                        {% for project in request.current_organization.projects.all|dictsort:"name" %}
+                                            {% if project.active %}
+                                                <li class="{% is_active_project_link project.name %}">
+                                                    <a
+                                                        href="{% url 'project' org_name=request.current_organization.name project_name=project.name %}"
+                                                    ><i class="fa fa-circle-o"></i> {{ project.name }}</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <li class="{% is_active_link 'list_projects' %}">
+                                            <a
+                                                href="{% url 'list_projects' org_name=request.current_organization.name %}"
+                                            ><i class="fa fa-edit"></i> Manage Projects</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                        <li class="{% is_active_link 'cves' 'cve' 'change' %}">
+                            <a href="{% url 'cves' %}"><i class="fa fa-shield"></i> <span>Vulnerabilities</span></a>
                         </li>
-                        {% endif %}
-                        {% endif %}
-                        <li class="{% is_active_link 'cves' 'cve' 'change' %}"><a href="{% url 'cves' %}"><i class="fa fa-shield"></i> <span>Vulnerabilities</span></a></li>
                         {% if request.current_organization %}
-                        <li class="{% is_active_link 'list_views' 'create_view' 'update_view' 'delete_view' %}"><a href="{% url 'list_views' org_name=request.current_organization.name %}"><i class="fa fa-eye"></i> <span>Views</span></a></li>
+                            <li class="{% is_active_link 'list_views' 'create_view' 'update_view' 'delete_view' %}">
+                                <a href="{% url 'list_views' org_name=request.current_organization.name %}"><i
+                                        class="fa fa-eye"
+                                    ></i> <span>Views</span></a>
+                            </li>
                         {% endif %}
-                        <li class="{% is_active_link 'vendors' 'subscribe' %}"><a href="{% url 'vendors' %}"><i class="fa fa-th-list"></i> <span> Vendors & Products</span></a></li>
-                        <li class="{% is_active_link 'weaknesses' %}"><a href="{% url 'weaknesses' %}"><i class="fa fa-sitemap"></i> <span> Weaknesses</span></a></li>
-                        <li class="{% is_active_link 'statistics' %}"><a href="{% url 'statistics' %}"><i class="fa fa-bar-chart"></i> <span> Statistics</span></a></li>
+                        <li class="{% is_active_link 'vendors' 'subscribe' %}">
+                            <a href="{% url 'vendors' %}"><i class="fa fa-th-list"></i> <span>
+                                    Vendors & Products</span></a>
+                        </li>
+                        <li class="{% is_active_link 'weaknesses' %}">
+                            <a href="{% url 'weaknesses' %}"><i class="fa fa-sitemap"></i> <span> Weaknesses</span></a>
+                        </li>
+                        <li class="{% is_active_link 'statistics' %}">
+                            <a href="{% url 'statistics' %}"><i class="fa fa-bar-chart"></i> <span>
+                                    Statistics</span></a>
+                        </li>
                         {% if user.is_authenticated %}
-                        <li class="header">SETTINGS</li>
-                        <li class="{% is_active_link 'list_organizations' 'create_organization' 'edit_organization' 'delete_organization' 'edit_organization_members' 'edit_organization_tokens' %}"><a href="{% url 'list_organizations' %}"><i class="fa fa-group"></i> <span> Organizations</span></a></li>
-                        <li class="{% is_active_link 'tags' 'create_tag' 'edit_tag' 'delete_tag' %}"><a href="{% url 'tags' %}"><i class="fa fa-tags"></i> <span> Tags</span></a></li>
-                        <li class="{% is_active_link 'settings_profile' 'settings_password' 'account_email' %}"><a href="{% url 'settings_profile' %}"><i class="fa fa-user"></i> <span> Profile</span></a></li>
-                        {% if user.is_superuser %}
-                        <li><a href="{% url 'admin:index' %}"><i class="fa fa-gear"></i> <span> Admin</span></a></li>
-                        {% endif %}
-                        <li><a href="{% url 'account_logout' %}"><i class="fa fa-sign-out"></i> <span> Logout</span></a></li>
+                            <li class="header">SETTINGS</li>
+                            <li class="{% is_active_link 'list_organizations' 'create_organization' 'edit_organization' 'delete_organization' 'edit_organization_members' 'edit_organization_tokens' %}">
+                                <a href="{% url 'list_organizations' %}"><i class="fa fa-group"></i> <span>
+                                        Organizations</span></a>
+                            </li>
+                            <li class="{% is_active_link 'tags' 'create_tag' 'edit_tag' 'delete_tag' %}">
+                                <a href="{% url 'tags' %}"><i class="fa fa-tags"></i> <span> Tags</span></a>
+                            </li>
+                            <li class="{% is_active_link 'settings_profile' 'settings_password' 'account_email' %}">
+                                <a href="{% url 'settings_profile' %}"><i class="fa fa-user"></i> <span>
+                                        Profile</span></a>
+                            </li>
+                            {% if user.is_superuser %}
+                                <li>
+                                    <a href="{% url 'admin:index' %}"><i class="fa fa-gear"></i> <span> Admin</span></a>
+                                </li>
+                            {% endif %}
+                            <li>
+                                <a href="{% url 'account_logout' %}"><i class="fa fa-sign-out"></i> <span>
+                                        Logout</span></a>
+                            </li>
                         {% endif %}
                     </ul>
                 </section>

@@ -120,7 +120,7 @@ class ActivityWidget(Widget):
         cleaned = super().validate_config(config)
 
         # Ensure the activities_view is supported
-        if not cleaned.get("activities_view") in ["all", "subscriptions"]:
+        if cleaned.get("activities_view") not in ["all", "subscriptions"]:
             raise ValueError(
                 f"Invalid activities view ({cleaned.get('activities_view')})"
             )

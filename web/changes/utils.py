@@ -21,7 +21,7 @@ class CustomHtmlHTML(HtmlDiff):
     def _format_line(self, side, flag, linenum, text):
         text = text.replace("&", "&amp;").replace(">", "&gt;").replace("<", "&lt;")
         text = text.replace(" ", "&nbsp;").rstrip()
-        return '<td class="diff_header">%s</td><td class="break">%s</td>' % (
+        return '<td class="diff_header">{}</td><td class="break">{}</td>'.format(
             linenum,
             text,
         )

@@ -232,7 +232,7 @@
   flex: 1;
 }
 
-.panel-group-cvss .panel-title .pull-right {
+.panel-group-cvss .panel-title .float-right {
   flex-shrink: 0;
 }
 

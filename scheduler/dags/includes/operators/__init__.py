@@ -1,7 +1,7 @@
 import pathlib
 
 from airflow.exceptions import AirflowException
-from airflow.models.baseoperator import BaseOperator
+from airflow.sdk.bases.operator import BaseOperator
 from includes.constants import (
     KB_LOCAL_REPO,
     MITRE_LOCAL_REPO,

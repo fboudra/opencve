@@ -43,7 +43,7 @@ def test_api_auth(client, create_user, create_organization):
     assert data["results"][0]["name"] == "test-org"
 
     # Test 4: Invalid Basic Auth credentials should fail
-    invalid_credentials = base64.b64encode("wronguser:wrongpass".encode()).decode()
+    invalid_credentials = base64.b64encode(b"wronguser:wrongpass").decode()
     response = client.get(
         reverse("organization-list"),
         HTTP_AUTHORIZATION=f"Basic {invalid_credentials}",

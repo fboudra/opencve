@@ -43,7 +43,6 @@ class Command(BaseCommand):
         then list all the new records to create.
         """
         for project in self.projects:
-
             for project_vendor in project.subscriptions.get("vendors"):
                 if project_vendor not in self.raw_vendors:
                     self.raw_vendors.append(project_vendor)

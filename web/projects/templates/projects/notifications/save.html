@@ -4,194 +4,231 @@
 {% block title %}Manage Notification - {{ block.super }}{% endblock %}
 
 {% block content_project %}
-
-<form method="post">
-    {% csrf_token %}
-    <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-6">
-            <div class="box box-primary">
-                <div class="box-header with-border">
-                    <h3 class="box-title">General Settings</h3>
-                    <div class="box-tools pull-right">
-                        {% if "is_enabled" in form.fields %}
-                        {{ form.is_enabled|as_crispy_field }}
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">General Settings</h3>
+                        <div class="box-tools float-right">
+                            {% if "is_enabled" in form.fields %}
+                                {{ form.is_enabled|as_crispy_field }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        {% if email_pending_confirmation %}
+                            <div class="alert alert-warning">
+                                This notification will be enabled once the recipient confirms the subscription by
+                                clicking the link in the confirmation email.
+                                <a
+                                    href="{% url 'resend_notification_confirmation' org_name=request.current_organization.name project_name=project.name notification=object.name %}"
+                                >Resend the confirmation email</a>.
+                            </div>
                         {% endif %}
+                        {{ form.name|as_crispy_field }}
+                        <div class="extras">
+                            {% with template_name="projects/notifications/_"|add:type|add:".html" %}
+                                {% include template_name %}
+                            {% endwith %}
+                        </div>
+                        {% if object %}
+                            <div class="float-left">
+                                <a
+                                    href="{% url 'delete_notification' org_name=request.current_organization.name project_name=project.name notification=object.name %}"
+                                    class="btn btn-danger"
+                                >Delete</a>
+                            </div>
+                        {% endif %}
+                        <div class="float-right">
+                            <a
+                                href="{% url 'notifications' org_name=request.current_organization.name project_name=project.name %}"
+                                class="btn btn-secondary"
+                            >Cancel</a>
+                            <button type="submit" name="action" value="save" class="btn btn-primary">Save</button>
+                        </div>
                     </div>
                 </div>
-                <div class="box-body">
-                    {% if email_pending_confirmation %}
-                    <div class="alert alert-warning">
-                        This notification will be enabled once the recipient confirms the subscription by clicking the link in the confirmation email.
-                        <a href="{% url 'resend_notification_confirmation' org_name=request.current_organization.name project_name=project.name notification=object.name %}">Resend the confirmation email</a>.
+
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-flask"></i> Try</h3>
                     </div>
-                    {% endif %}
-                    {{ form.name|as_crispy_field }}
-                    <div class="extras">
-                        {% with template_name="projects/notifications/_"|add:type|add:".html" %}
-                        {% include template_name %}
-                        {% endwith %}
-                    </div>
-                    {% if object %}
-                    <div class="pull-left">
-                        <a href="{% url 'delete_notification' org_name=request.current_organization.name project_name=project.name notification=object.name %}" class="btn btn-danger">Delete</a>
-                    </div>
-                    {% endif %}
-                    <div class="pull-right">
-                        <a href="{% url 'notifications' org_name=request.current_organization.name project_name=project.name %}" class="btn btn-default">Cancel</a>
-                        <button type="submit" name="action" value="save" class="btn btn-primary">Save</button>
+                    <div class="box-body">
+                        <p class="text-muted">
+                            Send a test without saving. For webhooks and Slack you will see the HTTP request and
+                            response below.
+                        </p>
+                        <p>
+                            <button type="submit" name="action" value="try" class="btn btn-info btn-block">
+                                <i class="fa fa-paper-plane"></i> Try
+                            </button>
+                        </p>
+                        {% if try_result %}
+                            <div class="alert alert-{% if try_result.success %}success{% else %}error{% endif %}">
+                                <i
+                                    class="fa {% if try_result.success %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"
+                                ></i>
+                                {{ try_result.summary }}
+                            </div>
+                            {% if try_result.channel_type == "email" and try_result.details %}
+                                <div>
+                                    {% if try_result.details.recipient %}
+                                        <strong>Recipient</strong>
+                                        <p>{{ try_result.details.recipient }}</p>
+                                    {% endif %}
+                                    {% if try_result.details.subject %}
+                                        <strong>Subject</strong>
+                                        <p>{{ try_result.details.subject }}</p>
+                                    {% endif %}
+                                    {% if try_result.details.error %}
+                                        <strong>Error</strong>
+                                        <p><code class="try-result-code">{{ try_result.details.error }}</code></p>
+                                    {% endif %}
+                                </div>
+                            {% elif try_result.details.request_url %}
+                                <div>
+                                    <strong>URL</strong>
+                                    <p><code class="try-result-code">{{ try_result.details.request_url }}</code></p>
+                                    {% if try_result.details.request_method %}
+                                        <strong>Method</strong>
+                                        <p>{{ try_result.details.request_method }}</p>
+                                    {% endif %}
+                                    {% if "response_status" in try_result.details %}
+                                        <strong>HTTP status</strong>
+                                        <p>{{ try_result.details.response_status }}</p>
+                                    {% endif %}
+                                    {% if try_result.details.error %}
+                                        <strong>Error</strong>
+                                        <p><code class="try-result-code">{{ try_result.details.error }}</code></p>
+                                    {% endif %}
+                                </div>
+                                {% if try_result.details.request_headers %}
+                                    <p class="text-muted" style="margin-bottom: 4px">
+                                        <strong>Request headers</strong>
+                                    </p>
+                                    <pre
+                                        class="pre-scrollable"
+                                        style="max-height: 120px; font-size: 11px"
+                                    >{% for hk, hv in try_result.details.request_headers.items %}{{ hk }}: {{ hv }}
+{% endfor %}</pre>
+                                {% endif %}
+                                {% if try_result.details.request_payload %}
+                                    <p class="text-muted" style="margin-bottom: 4px"><strong>Request body</strong></p>
+                                    <pre
+                                        class="pre-scrollable"
+                                        style="max-height: 200px; font-size: 11px"
+                                    >{{ try_result.details.request_payload }}</pre>
+                                {% endif %}
+                                {% if try_result.details.response_headers %}
+                                    <p class="text-muted" style="margin-bottom: 4px">
+                                        <strong>Response headers</strong>
+                                    </p>
+                                    <pre
+                                        class="pre-scrollable"
+                                        style="max-height: 120px; font-size: 11px"
+                                    >{% for hk, hv in try_result.details.response_headers.items %}{{ hk }}: {{ hv }}
+{% endfor %}</pre>
+                                {% endif %}
+                                {% if try_result.details.response_body %}
+                                    <p class="text-muted" style="margin-bottom: 4px"><strong>Response body</strong></p>
+                                    <pre
+                                        class="pre-scrollable"
+                                        style="max-height: 200px; font-size: 11px"
+                                    >{{ try_result.details.response_body }}</pre>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
-            <div class="box box-default">
-                <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-flask"></i> Try</h3>
-                </div>
-                <div class="box-body">
-                    <p class="text-muted">Send a test without saving. For webhooks and Slack you will see the HTTP request and response below.</p>
-                    <p>
-                        <button type="submit" name="action" value="try" class="btn btn-info btn-block"><i class="fa fa-paper-plane"></i> Try</button>
-                    </p>
-                    {% if try_result %}
-                    <div class="alert alert-{% if try_result.success %}success{% else %}error{% endif %}">
-                        <i class="fa {% if try_result.success %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
-                        {{ try_result.summary }}
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Alerts Settings</h3>
+                        <div class="box-tools float-right">
+                            <i
+                                class="fa fa-info-circle"
+                                data-toggle="tooltip"
+                                data-container="body"
+                                data-placement="left"
+                                title="Use this notification to send alerts when your subscriptions change. Configure the following settings to filter your alerts and reduce the number of notifications."
+                            ></i>
+                        </div>
                     </div>
-                    {% if try_result.channel_type == "email" and try_result.details %}
-                        <div>
-                            {% if try_result.details.recipient %}
-                            <strong>Recipient</strong>
-                            <p>{{ try_result.details.recipient }}</p>
-                            {% endif %}
-                            {% if try_result.details.subject %}
-                            <strong>Subject</strong>
-                            <p>{{ try_result.details.subject }}</p>
-                            {% endif %}
-                            {% if try_result.details.error %}
-                            <strong>Error</strong>
-                            <p><code class="try-result-code">{{ try_result.details.error }}</code></p>
-                            {% endif %}
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label>Receive a notification when:</label>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.created }}
+                                    a new CVE is created
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.first_time }}
+                                    one or more subscriptions first appeared in a CVE
+                                </label>
+                            </div>
                         </div>
-                    {% elif try_result.details.request_url %}
-                        <div>
-                            <strong>URL</strong>
-                            <p><code class="try-result-code">{{ try_result.details.request_url }}</code></p>
-                            {% if try_result.details.request_method %}
-                            <strong>Method</strong>
-                            <p>{{ try_result.details.request_method }}</p>
-                            {% endif %}
-                            {% if "response_status" in try_result.details %}
-                            <strong>HTTP status</strong>
-                            <p>{{ try_result.details.response_status }}</p>
-                            {% endif %}
-                            {% if try_result.details.error %}
-                            <strong>Error</strong>
-                            <p><code class="try-result-code">{{ try_result.details.error }}</code></p>
-                            {% endif %}
+
+                        <div class="form-group">
+                            <label>When a CVE is updated, receive a notification when :</label>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.metrics }}
+                                    its metrics have changed
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.cpes }}
+                                    its CPEs have changed
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.vendors }}
+                                    its vendors & products have changed
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.weaknesses }}
+                                    its weaknesses have changed
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.references }}
+                                    its references have changed
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.description }}
+                                    its description has changed
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.title }}
+                                    its title has changed
+                                </label>
+                            </div>
                         </div>
-                        {% if try_result.details.request_headers %}
-                        <p class="text-muted" style="margin-bottom: 4px;"><strong>Request headers</strong></p>
-                        <pre class="pre-scrollable" style="max-height: 120px; font-size: 11px;">{% for hk, hv in try_result.details.request_headers.items %}{{ hk }}: {{ hv }}
-{% endfor %}</pre>
-                        {% endif %}
-                        {% if try_result.details.request_payload %}
-                        <p class="text-muted" style="margin-bottom: 4px;"><strong>Request body</strong></p>
-                        <pre class="pre-scrollable" style="max-height: 200px; font-size: 11px;">{{ try_result.details.request_payload }}</pre>
-                        {% endif %}
-                        {% if try_result.details.response_headers %}
-                        <p class="text-muted" style="margin-bottom: 4px;"><strong>Response headers</strong></p>
-                        <pre class="pre-scrollable" style="max-height: 120px; font-size: 11px;">{% for hk, hv in try_result.details.response_headers.items %}{{ hk }}: {{ hv }}
-{% endfor %}</pre>
-                        {% endif %}
-                        {% if try_result.details.response_body %}
-                        <p class="text-muted" style="margin-bottom: 4px;"><strong>Response body</strong></p>
-                        <pre class="pre-scrollable" style="max-height: 200px; font-size: 11px;">{{ try_result.details.response_body }}</pre>
-                        {% endif %}
-                    {% endif %}
-                    {% endif %}
+
+                        <div class="form-group">
+                            {{ form.cvss31_score|as_crispy_field }}
+                            <span class="help-block"><small>Note that this setting does not affect CVE that do not have
+                                    CVSS.</small></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-lg-6 col-md-6 col-sm-6">
-            <div class="box box-primary">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Alerts Settings</h3>
-                    <div class="box-tools pull-right">
-                        <i class="fa fa-info-circle" data-toggle="tooltip" data-container="body" data-placement="left" title="Use this notification to send alerts when your subscriptions change. Configure the following settings to filter your alerts and reduce the number of notifications."></i>
-                    </div>
-                </div>
-                <div class="box-body">
-                    <div class="form-group">
-                        <label>Receive a notification when:</label>
-                        <div class="checkbox">
-                            <label>
-                                {{ form.created }}
-                                 a new CVE is created
-                            </label>
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                {{ form.first_time }}
-                                one or more subscriptions first appeared in a CVE
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>When a CVE is updated, receive a notification when :</label>
-                        <div class="checkbox">
-                            <label>
-                                {{ form.metrics }}
-                                its metrics have changed
-                            </label>
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                {{ form.cpes }}
-                                its CPEs have changed
-                            </label>
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                {{ form.vendors }}
-                                its vendors & products have changed
-                            </label>
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                {{ form.weaknesses }}
-                                its weaknesses have changed
-                            </label>
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                {{ form.references }}
-                                its references have changed
-                            </label>
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                {{ form.description }}
-                                its description has changed
-                            </label>
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                {{ form.title }}
-                                its title has changed
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        {{ form.cvss31_score|as_crispy_field }}
-                        <span class="help-block"><small>Note that this setting does not affect CVE that do not have CVSS.</small></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</form>
-
-{% endblock %}
+    </form>
+{% endblock content_project %}

@@ -149,7 +149,7 @@ def test_widget_validate_type():
 
         # Invalid type
         with pytest.raises(
-            ValueError, match=re.escape(f"Invalid widget type (invalid_type)")
+            ValueError, match=re.escape("Invalid widget type (invalid_type)")
         ):
             Widget.validate_type("invalid_type")
 
@@ -301,7 +301,7 @@ def test_activity_widget_validate_config():
 
     # Test invalid value
     with pytest.raises(
-        ValueError, match=re.escape(f"Invalid activities view (invalid)")
+        ValueError, match=re.escape("Invalid activities view (invalid)")
     ):
         widget.validate_config({"activities_view": "invalid"})
 

@@ -2,33 +2,53 @@
 <div class="box box-primary" id="cve-references">
     <div class="box-header">
         <div class="box-title">References</div>
-        <div class="box-tools pull-right">
+        <div class="box-tools float-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
         </div>
     </div>
     <div class="box-body">
         {% if cve.references.data %}
-        <table class="table table-bordered">
-            <thead>
-                <th>Link</th>
-                <th>Providers</th>
-            </thead>
-            <tbody>
-            {% for ref in cve.references.data %}
-            <tr>
-                <td class="col-md-8 td-ellipsis"><a href="{{ ref }}" target="_blank">{{ ref }}</a></td>
-                <td>
-                    {% if ref in cve.kb_json.mitre.references %}<img src="{% static 'img/cve-icon.png' %}" class="provider-icon" style="width: 32px;" alt="cve-icon" />{% endif %}
-                    {% if ref in cve.kb_json.nvd.references %}<img src="{% static 'img/nvd-icon.png' %}" class="provider-icon" style="width: 32px;" alt="cve-icon" />{% endif %}
-                    {% if ref in cve.kb_json.redhat.references %}<img src="{% static 'img/redhat-icon.png' %}" class="provider-icon" style="width: 18px;" alt="cve-icon" />{% endif %}
-                    {% if ref in cve.kb_json.vulnrichment.references %}<img src="{% static 'img/cisa-icon.png' %}" class="provider-icon" style="width: 18px;" alt="cve-icon" />{% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+            <table class="table table-bordered">
+                <thead>
+                    <th>Link</th>
+                    <th>Providers</th>
+                </thead>
+                <tbody>
+                    {% for ref in cve.references.data %}
+                        <tr>
+                            <td class="col-md-8 td-ellipsis"><a href="{{ ref }}" target="_blank">{{ ref }}</a></td>
+                            <td>
+                                {% if ref in cve.kb_json.mitre.references %}<img
+                                        src="{% static 'img/cve-icon.png' %}"
+                                        class="provider-icon"
+                                        style="width: 32px"
+                                        alt="cve-icon"
+                                    >{% endif %}
+                                {% if ref in cve.kb_json.nvd.references %}<img
+                                        src="{% static 'img/nvd-icon.png' %}"
+                                        class="provider-icon"
+                                        style="width: 32px"
+                                        alt="cve-icon"
+                                    >{% endif %}
+                                {% if ref in cve.kb_json.redhat.references %}<img
+                                        src="{% static 'img/redhat-icon.png' %}"
+                                        class="provider-icon"
+                                        style="width: 18px"
+                                        alt="cve-icon"
+                                    >{% endif %}
+                                {% if ref in cve.kb_json.vulnrichment.references %}<img
+                                        src="{% static 'img/cisa-icon.png' %}"
+                                        class="provider-icon"
+                                        style="width: 18px"
+                                        alt="cve-icon"
+                                    >{% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         {% else %}
-        <p class="text-muted"><em>No reference.</em></p>
+            <p class="text-muted"><em>No reference.</em></p>
         {% endif %}
     </div>
 </div>

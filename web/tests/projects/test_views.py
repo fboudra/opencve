@@ -1122,7 +1122,7 @@ def test_report_view_statistics(
     report = Report.objects.create(project=project, day=date.today())
     change = Change.objects.create(
         cve=cve,
-        path=f"2024/CVE-2024-31331.json",
+        path="2024/CVE-2024-31331.json",
         commit="a" * 40,
         types=["created"],
     )

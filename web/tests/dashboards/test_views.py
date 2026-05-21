@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from django.test import override_settings
 from django.urls import reverse
 from django.utils.timezone import now
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import uuid
 import json
 from django.http import JsonResponse

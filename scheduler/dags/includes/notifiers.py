@@ -1,4 +1,3 @@
-import asyncio
 import json
 import logging
 import urllib.parse
@@ -186,7 +185,7 @@ class WebhookNotifier(BaseNotifier):
             logger.error("ClientConnectorError(%s): %s", self.url, e)
         except aiohttp.ClientResponseError as e:
             logger.error("ClientResponseError(%s): %s", self.url, e)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error(
                 "TimeoutError(%s): the request timeout of %s has been exceeded",
                 self.url,

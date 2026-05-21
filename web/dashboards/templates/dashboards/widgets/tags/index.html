@@ -1,11 +1,16 @@
 {% for tag in tags %}
-<a href="{% url 'cves' %}?q=userTag:{{ tag.name }}" data-toggle="tooltip" data-container="body" title="{{ tag.description }}">
-    <span class="label label-tag" style="background-color: {{ tag.color }};">{{ tag.name }}</span>
-</a>
+    <a
+        href="{% url 'cves' %}?q=userTag:{{ tag.name }}"
+        data-toggle="tooltip"
+        data-container="body"
+        title="{{ tag.description }}"
+    >
+        <span class="label label-tag" style="background-color: {{ tag.color }}">{{ tag.name }}</span>
+    </a>
 {% empty %}
-<p class="alert alert-info">
-    You don’t have any tags yet.
-    <br />
-    Create one by <a href="{% url 'create_tag' %}">clicking here</a> to better organize and filter your CVEs.
-</p>
+    <p class="alert alert-info">
+        You don’t have any tags yet.
+        <br>
+        Create one by <a href="{% url 'create_tag' %}">clicking here</a> to better organize and filter your CVEs.
+    </p>
 {% endfor %}

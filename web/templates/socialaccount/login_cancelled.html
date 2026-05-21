@@ -6,8 +6,8 @@
 
 {% block header %}Login Cancelled{% endblock %}
 
-{% block content%}
-<p>You decided to cancel logging in to our site using one of your existing accounts.</p>
+{% block content %}
+    <p>You decided to cancel logging in to our site using one of your existing accounts.</p>
 
-<p>If this was a mistake, please proceed to <a href="{% url 'account_login' %}" class="text-center">sign in</a>.</p>
-{% endblock %}
+    <p>If this was a mistake, please proceed to <a href="{% url 'account_login' %}" class="text-center">sign in</a>.</p>
+{% endblock content %}

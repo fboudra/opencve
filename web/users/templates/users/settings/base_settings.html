@@ -1,56 +1,54 @@
 {% extends "base.html" %}
-{% load static %}
-{% load opencve_extras %}
+{% load opencve_extras static %}
 
-{% block title%}Settings - {{ block.super }}{% endblock %}
+{% block title %}Settings - {{ block.super }}{% endblock %}
 
-{% block navbar_title%}Settings{% endblock %}
+{% block navbar_title %}Settings{% endblock %}
 
 {% block content %}
+    <section class="content">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade in">
+                            <button aria-label="Close" data-dismiss="alert" class="close" type="button">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
 
-<section class="content">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            {% if messages %}
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags}} alert-dismissible fade in">
-                <button aria-label="Close" data-dismiss="alert" class="close" type="button"><span
-                        aria-hidden="true">×</span></button>
-                <p>{{ message }}</p>
-            </div>
-            {% endfor %}
-            {% endif %}
-
-            <div class="nav-tabs-custom nav-tabs-primary nav-tabs-settings">
-                <ul class="nav nav-tabs">
-                    <li class="{% is_active_link 'tags' 'create_tag' 'edit_tag' 'delete_tag' %}">
-                        <a href="{% url 'tags' %}">Tags</a>
-                    </li>
-                    <li class="{% is_active_link 'settings_profile' %}">
-                        <a href="{% url 'settings_profile' %}">Profile</a>
-                    </li>
-                    <li class="{% is_active_link 'account_email' %}">
-                        <a href="{% url 'account_email' %}">Email</a>
-                    </li>
-                    <li class="{% is_active_link 'settings_password' %}">
-                        <a href="{% url 'settings_password' %}">Password</a>
-                    </li>
-                    <li class="{% is_active_link 'mfa_index' 'mfa_deactivate_totp' 'mfa_activate_totp' 'mfa_view_recovery_codes' 'mfa_generate_recovery_codes' %}">
-                        <a href="{% url 'mfa_index' %}">2FA</a>
-                    </li>
-                    <li class="{% is_active_link 'settings_social' %}">
-                        <a href="{% url 'settings_social' %}">Social Auth</a>
-                    </li>
-                    <li class="{% is_active_link 'settings_account' 'delete_account' %}">
-                        <a href="{% url 'settings_account' %}">Account</a>
-                    </li>
-                </ul>
-                <div class="tab-content">
-                    {% block content_settings %}{% endblock %}
+                <div class="nav-tabs-custom nav-tabs-primary nav-tabs-settings">
+                    <ul class="nav nav-tabs">
+                        <li class="{% is_active_link 'tags' 'create_tag' 'edit_tag' 'delete_tag' %}">
+                            <a href="{% url 'tags' %}">Tags</a>
+                        </li>
+                        <li class="{% is_active_link 'settings_profile' %}">
+                            <a href="{% url 'settings_profile' %}">Profile</a>
+                        </li>
+                        <li class="{% is_active_link 'account_email' %}">
+                            <a href="{% url 'account_email' %}">Email</a>
+                        </li>
+                        <li class="{% is_active_link 'settings_password' %}">
+                            <a href="{% url 'settings_password' %}">Password</a>
+                        </li>
+                        <li class="{% is_active_link 'mfa_index' 'mfa_deactivate_totp' 'mfa_activate_totp' 'mfa_view_recovery_codes' 'mfa_generate_recovery_codes' %}">
+                            <a href="{% url 'mfa_index' %}">2FA</a>
+                        </li>
+                        <li class="{% is_active_link 'settings_social' %}">
+                            <a href="{% url 'settings_social' %}">Social Auth</a>
+                        </li>
+                        <li class="{% is_active_link 'settings_account' 'delete_account' %}">
+                            <a href="{% url 'settings_account' %}">Account</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        {% block content_settings %}{% endblock %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
-{% endblock %}
+    </section>
+{% endblock content %}

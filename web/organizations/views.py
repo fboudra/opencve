@@ -63,7 +63,7 @@ class OrganizationCreateView(
     success_message = "The organization has been successfully created."
 
     def form_valid(self, form):
-        response = super(OrganizationCreateView, self).form_valid(form)
+        response = super().form_valid(form)
         date_now = now()
         Membership.objects.create(
             user=self.request.user,

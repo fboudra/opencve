@@ -120,12 +120,12 @@ services:
     restart: on-failure
 
   postgres:
-    image: postgres:${POSTGRES_VERSION:-15}
+    image: postgres:${POSTGRES_VERSION:-18}
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-opencve}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-opencve}
       POSTGRES_DB: opencve
-      PGDATA: /var/lib/postgreqsql/data
+      PGDATA: /var/lib/postgresql/data
     restart: on-failure
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "$POSTGRES_USER"]
@@ -134,7 +134,60 @@ services:
       start_period: 5s
     volumes:
       - ./db:/docker-entrypoint-initdb.d
-      - postgres-db:/var/lib/postgreqsql/data
+      - postgres-db:/var/lib/postgresql/data
+
+  init-web-db:
+    build:
+      context: ../web
+      dockerfile: Dockerfile.test
+    environment:
+      DJANGO_SETTINGS_MODULE: opencve.conf.settings
+      OPENCVE_DATABASE_URL: postgresql://opencve:opencve@postgres:5432/opencve
+      PYTHONPATH: /app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "python manage.py migrate --noinput --skip-checks || true"
+    profiles:
+      - test
+
+  tests-web:
+    build:
+      context: ../web
+      dockerfile: Dockerfile.test
+    environment:
+      DJANGO_SETTINGS_MODULE: opencve.conf.settings
+      OPENCVE_DATABASE_URL: postgresql://opencve:opencve@postgres:5432/opencve
+      PYTHONPATH: /app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      init-web-db:
+        condition: service_completed_successfully
+    command: pytest tests/ -v
+    profiles:
+      - test
+
+  tests-scheduler:
+    build:
+      context: ../scheduler
+      dockerfile: Dockerfile.test
+    environment:
+      AIRFLOW_HOME: /opt/airflow
+      PATH: /home/airflow/.local/bin:/opt/airflow/.venv/bin:/usr/local/bin:/usr/bin
+      GIT_PYTHON_REFRESH: quiet
+      AIRFLOW_CONN_OPENCVE_POSTGRES: postgresql://opencve:opencve@postgres:5432/opencve
+      AIRFLOW_CONN_OPENCVE_REDIS: redis://redis:6379
+    volumes:
+      - ../scheduler:/opt/airflow/scheduler
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    entrypoint: ["pytest", "tests/", "-v", "--ignore=tests/operators/"]
 
 volumes:
     postgres-db:

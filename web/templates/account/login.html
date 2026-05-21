@@ -6,18 +6,16 @@
 
 {% block header %}Sign in to your account{% endblock %}
 
-{% block content%}
+{% block content %}
+    {% include 'social_buttons.html' %}
 
-{% include 'social_buttons.html' %}
-
-{% crispy form %}
-
-{% endblock %}
+    {% crispy form %}
+{% endblock content %}
 
 {% block links %}
-{% if ENABLE_REGISTER %}
-<hr />
-<span>Register a new account?</span>
-<a href="{% url 'account_signup' %}" class="text-center">Register</a>
-{% endif %}
-{% endblock %}
+    {% if ENABLE_REGISTER %}
+        <hr>
+        <span>Register a new account?</span>
+        <a href="{% url 'account_signup' %}" class="text-center">Register</a>
+    {% endif %}
+{% endblock links %}

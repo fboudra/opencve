@@ -1,4 +1,3 @@
-from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 from django import forms
@@ -12,7 +11,7 @@ class SearchForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        super(SearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["q"].widget.attrs["placeholder"] = "Search in CVEs database"
         self.helper = FormHelper()
         self.helper.form_show_labels = False

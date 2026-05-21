@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.contrib.admin.views.main import ChangeList
-from django.db.models import Count
 from django.urls import reverse
 
 from changes.models import Change
@@ -28,7 +27,7 @@ class ChangeAdmin(BaseReadOnlyAdminMixin, admin.ModelAdmin):
     )
 
     def get_queryset(self, request):
-        queryset = super(ChangeAdmin, self).get_queryset(request)
+        queryset = super().get_queryset(request)
         if request.GET.get("task"):
             queryset = queryset.filter(task_id=request.GET.get("task"))
         return queryset

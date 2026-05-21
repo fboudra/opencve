@@ -77,9 +77,9 @@ def test_import_cves_command_handles_multiple_cves(db):
     ]
 
     for cve_id in expected_cves:
-        assert Cve.objects.filter(
-            cve_id=cve_id
-        ).exists(), f"CVE {cve_id} should be imported"
+        assert Cve.objects.filter(cve_id=cve_id).exists(), (
+            f"CVE {cve_id} should be imported"
+        )
 
 
 def test_import_cves_command_idempotent(db):

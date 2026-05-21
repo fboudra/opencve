@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import mixins, permissions, viewsets
+from rest_framework import mixins, viewsets
 
 from cves.models import Cve
 from cves.serializers import CveListSerializer

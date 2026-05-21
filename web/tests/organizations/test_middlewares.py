@@ -36,7 +36,7 @@ def test_organization_middleware_with_organizations(
     )
     request = response.wsgi_request
 
-    assert content.text == orga2.name
+    assert content.get_text(strip=True) == orga2.name
     assert request.current_organization == orga2
     assert request.user_organizations == [orga1, orga2]
 
@@ -52,7 +52,7 @@ def test_organization_middleware_with_organizations(
     )
     request = response.wsgi_request
 
-    assert content.text == orga1.name
+    assert content.get_text(strip=True) == orga1.name
     assert request.current_organization == orga1
     assert request.user_organizations == [orga1, orga2]
 
@@ -75,7 +75,7 @@ def test_organization_middleware_load_from_url(
     )
     request = response.wsgi_request
 
-    assert content.text == "org_foo"
+    assert content.get_text(strip=True) == "org_foo"
     assert request.current_organization == org_foo
     assert request.user_organizations == [org_bar, org_foo]
 
@@ -87,7 +87,7 @@ def test_organization_middleware_load_from_url(
     )
     request = response.wsgi_request
 
-    assert content.text == "org_bar"
+    assert content.get_text(strip=True) == "org_bar"
     assert request.current_organization == org_bar
     assert request.user_organizations == [org_bar, org_foo]
 

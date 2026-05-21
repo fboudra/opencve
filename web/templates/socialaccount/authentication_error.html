@@ -6,8 +6,8 @@
 
 {% block header %}Third-Party Login Failure{% endblock %}
 
-{% block content%}
-<p>An error occurred while attempting to login via your third-party account.</p>
+{% block content %}
+    <p>An error occurred while attempting to login via your third-party account.</p>
 
-<p>If this was a mistake, please proceed to <a href="{% url 'account_login' %}" class="text-center">sign in</a>.</p>
-{% endblock %}
+    <p>If this was a mistake, please proceed to <a href="{% url 'account_login' %}" class="text-center">sign in</a>.</p>
+{% endblock content %}

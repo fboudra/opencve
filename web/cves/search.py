@@ -389,7 +389,6 @@ class Search:
         }
 
         for field, filter in filter_json.items():
-
             if field not in filters_mapping.keys():
                 raise BadQueryException(
                     f"The field '{field}' is not valid. Allowed fields are: {', '.join(filters_mapping.keys())}."
@@ -409,11 +408,11 @@ class Search:
         """
         # Define grammar for parsing
         identifier = pp.Word(pp.alphanums + "_-")
-        operator = pp.oneOf(": = > < >= <= !: !=")
+        operator = pp.one_of(": = > < >= <= !: !=")
         date_value = pp.Regex(r"\d{4}-\d{2}-\d{2}")
         value = (
             pp.Word(pp.alphanums + "_-.")
-            | pp.quotedString.setParseAction(pp.removeQuotes)
+            | pp.quotedString.set_parse_action(pp.removeQuotes)
             | date_value
         )
 
@@ -421,7 +420,7 @@ class Search:
         standalone = pp.Word(pp.alphanums + "_-.")
         term = pp.Group(
             (identifier + operator + value)
-            | standalone.setParseAction(self._single_fields)
+            | standalone.set_parse_action(self._single_fields)
         )
 
         # Operators for combining terms
@@ -429,7 +428,7 @@ class Search:
         or_ = pp.CaselessKeyword("OR")
 
         # Expressions for grouping
-        expr = pp.infixNotation(
+        expr = pp.infix_notation(
             term,
             [
                 (and_, 2, pp.opAssoc.LEFT),
@@ -438,7 +437,7 @@ class Search:
         )
 
         # Parse the query
-        parsed = expr.parseString(query, parseAll=True).asList()
+        parsed = expr.parse_string(query, parse_all=True).asList()
 
         # Remove unnecessary outer list layer
         if len(parsed) == 1 and isinstance(parsed[0], list):

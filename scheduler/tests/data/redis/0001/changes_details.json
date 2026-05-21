@@ -1,9 +1,6 @@
 {
   "3820f90d-c49e-4b83-aa13-1eb3520107e8": {
-    "change_types": [
-      "cpes",
-      "metrics"
-    ],
+    "change_types": ["cpes", "metrics"],
     "change_path": "2020/CVE-2020-13965.json",
     "cve_vendors": [
       "debian",
@@ -52,9 +49,7 @@
     }
   },
   "cdfcc200-4cdb-42ba-98c1-42c800037f05": {
-    "change_types": [
-      "metrics"
-    ],
+    "change_types": ["metrics"],
     "change_path": "2020/CVE-2020-14323.json",
     "cve_vendors": [
       "debian",
@@ -108,10 +103,7 @@
     }
   },
   "38a4b8f0-bb77-485e-a864-00c8e232cdf6": {
-    "change_types": [
-      "cpes",
-      "vendors"
-    ],
+    "change_types": ["cpes", "vendors"],
     "change_path": "2020/CVE-2020-16307.json",
     "cve_vendors": [
       "artifex",
@@ -160,9 +152,7 @@
     }
   },
   "df9fc70a-418d-49aa-b800-f54a7a2c1231": {
-    "change_types": [
-      "title"
-    ],
+    "change_types": ["title"],
     "change_path": "2020/CVE-2020-15305.json",
     "cve_vendors": [
       "canonical",

@@ -15,7 +15,7 @@ class ViewForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
-        super(ViewForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper = FormHelper()
         self.helper.layout = Layout(

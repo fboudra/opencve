@@ -41,10 +41,10 @@ def excerpt(objects, _type):
     if _type == "products":
         objects = [o for o in objects if PRODUCT_SEPARATOR in o]
     else:
-        objects = [o for o in objects if not PRODUCT_SEPARATOR in o]
+        objects = [o for o in objects if PRODUCT_SEPARATOR not in o]
 
     objects = sorted(objects)
-    output += '<span class="badge badge-primary">{}</span> '.format(len(objects))
+    output += f'<span class="badge badge-primary">{len(objects)}</span> '
 
     # Keep the remains size and reduce the list
     remains = len(objects[settings.COUNT_EXCERPT :])
@@ -67,7 +67,7 @@ def excerpt(objects, _type):
         output += ", " if idx + 1 != len(objects) and _type != "tags" else " "
 
     if remains:
-        output += "<i>and {} more</i>".format(remains)
+        output += f"<i>and {remains} more</i>"
 
     return output
 
@@ -108,7 +108,7 @@ def is_top_vendor_or_product(name):
 @register.filter
 def gravatar_url(email, size=40):
     return "https://www.gravatar.com/avatar/{}?{}".format(
-        hashlib.md5(email.lower().encode("utf-8")).hexdigest(),
+        hashlib.md5(email.lower().encode("utf-8"), usedforsecurity=False).hexdigest(),
         urlencode({"s": str(size)}),
     )
 

@@ -1,6 +1,6 @@
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Div, Field, Layout, Submit
+from crispy_forms.layout import Div, Field, Layout, Submit
 from django import forms
 
 from organizations.models import Membership, Organization
@@ -15,13 +15,13 @@ class OrganizationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
-        super(OrganizationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Add help text to name field only when editing
         if self.instance and not self.instance._state.adding:
-            self.fields["name"].help_text = (
-                "Renaming the organization will break any external links to it, as the URL changes."
-            )
+            self.fields[
+                "name"
+            ].help_text = "Renaming the organization will break any external links to it, as the URL changes."
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -52,7 +52,7 @@ class MembershipForm(forms.Form):
     role = forms.ChoiceField(choices=Membership.ROLES)
 
     def __init__(self, *args, **kwargs):
-        super(MembershipForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["email"].widget.attrs["placeholder"] = self.fields["email"].label
         self.helper = FormHelper()
         self.helper.form_show_labels = False
@@ -85,7 +85,7 @@ class OrganizationAPITokenForm(forms.Form):
     def __init__(self, *args, **kwargs):
         # Pop request if passed (from RequestViewMixin)
         kwargs.pop("request", None)
-        super(OrganizationAPITokenForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             "name",

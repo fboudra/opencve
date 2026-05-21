@@ -46,7 +46,7 @@ vendors_router.register(r"cve", VendorCveViewSet, basename="vendor-cves")
 products_cves_router = routers.NestedSimpleRouter(
     vendors_router, "products", lookup="product"
 )
-products_cves_router.register(f"cve", ProductCveViewSet, basename="product-cves")
+products_cves_router.register("cve", ProductCveViewSet, basename="product-cves")
 
 
 urlpatterns = [

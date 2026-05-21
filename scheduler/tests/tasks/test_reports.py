@@ -3,7 +3,8 @@ import importlib
 
 import pytest
 import pendulum
-from airflow.exceptions import AirflowConfigException, AirflowSkipException
+from airflow._shared.configuration.exceptions import AirflowConfigException
+from airflow.sdk.exceptions import AirflowSkipException
 from airflow.utils.state import TaskInstanceState
 
 from includes.operators.process_kb_operator import ProcessKbOperator

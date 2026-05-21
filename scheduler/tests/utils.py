@@ -20,7 +20,7 @@ class TestRepo:
         self.repo.git.add(A=True)
 
         return self.repo.index.commit(
-            f"Initial Commit",
+            "Initial Commit",
             author=self.author,
             committer=self.author,
             commit_date=pendulum.datetime(2024, 1, 1, 0, 0, tz="UTC"),

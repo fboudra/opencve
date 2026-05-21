@@ -1,5 +1,4 @@
-from django.shortcuts import get_object_or_404
-from rest_framework import permissions, viewsets
+from rest_framework import viewsets
 
 from organizations.models import Organization
 from organizations.serializers import (

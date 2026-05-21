@@ -1,6 +1,6 @@
 import logging
 
-from airflow.decorators import task
+from airflow.sdk import task
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from psycopg2.extras import Json
 

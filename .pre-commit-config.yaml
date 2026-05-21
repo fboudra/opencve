@@ -1,18 +1,205 @@
+---
+exclude: "^docs/|/migrations/|uv.lock"
+default_stages: [pre-commit]
+minimum_pre_commit_version: "4.5.1"
+
+default_language_version:
+  golang: 1.26.2
+  node: 24.15.0
+  python: python3.11
+  rust: 1.95.0
+
 repos:
-  - repo: 'https://github.com/pre-commit/pre-commit-hooks'
-    rev: v2.3.0
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
     hooks:
-      - id: end-of-file-fixer
-        exclude: ^web/static/
       - id: trailing-whitespace
-        exclude: ^web/static/
-  - repo: 'https://github.com/psf/black'
-    rev: 24.8.0
+        exclude: |
+          (?x)^(
+            web/static/fonts/.*|
+            web/static/img/.*|
+          )$
+      - id: end-of-file-fixer
+        exclude: |
+          (?x)^(
+            web/static/css/.*|
+            web/static/fonts/.*|
+            web/static/js/.*|
+          )$
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+      - id: debug-statements
+      - id: check-builtin-literals
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: detect-private-key
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.21.2
     hooks:
-      - id: black
-  - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v3.4.0
+    - id: pyupgrade
+      args: ["--py311-plus"]
+
+  - repo: https://github.com/adamchainz/django-upgrade
+    rev: 1.30.0
     hooks:
-      - id: conventional-pre-commit
-        stages: [commit-msg]
-        args: []
+      - id: django-upgrade
+        args: ["--target-version", "5.2"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.13
+    hooks:
+      - id: ruff-check
+        args: ["--fix", "--exit-non-zero-on-fix"]
+      - id: ruff-format
+
+  - repo: https://github.com/tox-dev/pyproject-fmt
+    rev: v2.21.2
+    hooks:
+      - id: pyproject-fmt
+
+  - repo: https://github.com/adamchainz/djade-pre-commit
+    rev: 1.9.0
+    hooks:
+    - id: djade
+      args: ["--target-version", "5.2"]
+
+#  - repo: https://github.com/UnknownPlatypus/djangofmt-pre-commit
+#    rev: v0.2.8
+#    hooks:
+#      - id: djangofmt
+
+  - repo: https://github.com/biomejs/pre-commit
+    rev: v2.4.15
+    hooks:
+    - id: biome-check
+      additional_dependencies:
+        - '@biomejs/biome@2.4.10'
+      exclude: |
+        (?x)^(
+          web/static/css/.*|
+          web/static/js/.*|
+        )$
+
+#  - repo: https://github.com/Riverside-Healthcare/djLint
+#    rev: v1.36.4
+#    hooks:
+#      # - id: djlint-reformat-django
+#      - id: djlint-django
+
+#  - repo: https://github.com/pycqa/pylint
+#    rev: v4.0.5
+#    hooks:
+#      - id: pylint
+#        additional_dependencies:
+#          - "django-environ==0.13.0"
+#          - "django>=5.2.14,<6"
+#          - "pylint-django==2.7.0"
+#          - "python-gitlab==8.2.0"
+#        args:
+#          - "--load-plugins"
+#          - "pylint_django"
+#          - "--django-settings-module=opencve.conf.settings"
+#          - "web/"
+#          - "web/cves/management/commands/import_cves.py"
+#          - "web/projects/management/commands/fix_missing_vendors.py"
+#          - "web/users/management/commands/import_from_v1.py"
+#          - "web/tests/**/*.py"
+#          - "web/manage.py"
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.2
+    hooks:
+      - id: codespell
+        additional_dependencies:
+          - "tomli==2.4.1"
+        exclude: |
+          (?x)^(
+            uv.lock|
+            scheduler/airflow.cfg.example|
+            web/tests/data/kb/2021/.*|
+            web/tests/data/serialized_cves/.*|
+            web/static/css/.*|
+            web/static/js/.*|
+            web/cves/.*|
+            web/cves/templates/cves/includes/.*|
+            web/static/fonts/.*|
+            web/tests/cves/.*|
+          )$
+
+  # - repo: https://github.com/PyCQA/bandit
+  #   rev: 1.9.4
+  #   hooks:
+  #     - id: bandit
+  #       additional_dependencies:
+  #         - "bandit[toml]"
+  #       args:
+  #         - "--severity-level=medium"
+
+  # TODO: fix the issues reported by mypy
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: v1.20.0
+  #   hooks:
+  #     - id: mypy
+  #       additional_dependencies:
+  #         - "exceptiongroup==1.3.1"
+  #         - "tokenize-rt==6.2.0"
+  #         - "tomli==2.4.1"
+  #         - "types-PyYAML"
+  #         - "types-requests"
+  #       args:
+  #         - "--ignore-missing-imports"
+  #         - "--strict"
+
+  # - repo: https://github.com/dunossauro/zuban-pre-commit
+  #   rev: v0.6.2
+  #   hooks:
+  #     - id: zuban
+  #       args: [--pretty]
+  #     - id: zmypy
+  #       args: ["--ignore-missing-imports", "--warn-unreachable"]
+
+  # - repo: https://github.com/facebook/pyrefly-pre-commit
+  #   rev: 0.59.1
+  #   hooks:
+  #     - id: pyrefly-check
+  #       pass_filenames: false
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      - id: gitleaks
+        name: gitleaks
+
+  - repo: https://github.com/betterleaks/betterleaks
+    rev: v1.3.0
+    hooks:
+      - id: betterleaks
+        name: betterleaks
+
+  - repo: local
+    hooks:
+      - id: trufflehog
+        name: TruffleHog
+        description: detect hardcoded secrets
+        entry: bash -c 'trufflehog git file://. --since-commit HEAD --results=verified,unknown --fail --trust-local-git-config --no-update'
+        language: system
+        stages: ["pre-commit", "pre-push"]
+
+  - repo: https://github.com/thoughtworks/talisman
+    rev: v1.37.0
+    hooks:
+      - id: talisman-commit
+
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.14.0
+    hooks:
+      - id: hadolint
+        args: ["--ignore", "DL3008", "--ignore", "DL3013", "--ignore", "DL3018", "--ignore", "DL3041"]
+
+# sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
+ci:
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false

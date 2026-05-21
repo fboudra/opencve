@@ -1,53 +1,50 @@
 {% extends "base.html" %}
 
 {% block title %}Edit Organization - {{ block.super }}{% endblock %}
+
 {% block navbar_title %}Edit Organization{% endblock %}
 
 {% block content %}
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-3 col-sm-4">
+                        <div class="box box-solid">
+                            <div class="box-body no-padding">
+                                <ul class="nav nav-pills nav-stacked">
+                                    <li class="{% if active_tab == 'general' %}active{% endif %}">
+                                        <a href="{% url 'edit_organization' org_name=organization.name %}">
+                                            <i class="fa fa-cog"></i> General
+                                        </a>
+                                    </li>
+                                    <li class="{% if active_tab == 'members' %}active{% endif %}">
+                                        <a href="{% url 'edit_organization_members' org_name=organization.name %}">
+                                            <i class="fa fa-users"></i> Memberships
+                                        </a>
+                                    </li>
+                                    <li class="{% if active_tab == 'tokens' %}active{% endif %}">
+                                        <a href="{% url 'edit_organization_tokens' org_name=organization.name %}">
+                                            <i class="fa fa-key"></i> API Tokens
+                                        </a>
+                                    </li>
+                                    <li class="{% if active_tab == 'audit-logs' %}active{% endif %}">
+                                        <a href="{% url 'edit_organization_audit_logs' org_name=organization.name %}">
+                                            <i class="fa fa-list-alt"></i> Audit logs
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
 
-<section class="content">
-  <div class="row">
-    <div class="col-md-12">
-
-      <div class="row">
-        <div class="col-md-3 col-sm-4">
-          <div class="box box-solid">
-            <div class="box-body no-padding">
-              <ul class="nav nav-pills nav-stacked">
-                <li class="{% if active_tab == 'general' %}active{% endif %}">
-                  <a href="{% url 'edit_organization' org_name=organization.name %}">
-                    <i class="fa fa-cog"></i> General
-                  </a>
-                </li>
-                <li class="{% if active_tab == 'members' %}active{% endif %}">
-                  <a href="{% url 'edit_organization_members' org_name=organization.name %}">
-                    <i class="fa fa-users"></i> Memberships
-                  </a>
-                </li>
-                <li class="{% if active_tab == 'tokens' %}active{% endif %}">
-                  <a href="{% url 'edit_organization_tokens' org_name=organization.name %}">
-                    <i class="fa fa-key"></i> API Tokens
-                  </a>
-                </li>
-                <li class="{% if active_tab == 'audit-logs' %}active{% endif %}">
-                  <a href="{% url 'edit_organization_audit_logs' org_name=organization.name %}">
-                    <i class="fa fa-list-alt"></i> Audit logs
-                  </a>
-                </li>
-              </ul>
+                    <div class="col-md-9 col-sm-8">
+                        {% include "messages.html" %}
+                        <div id="organization-ajax-messages"></div>
+                        {% block tab_content %}{% endblock %}
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-
-        <div class="col-md-9 col-sm-8">
-          {% include "messages.html" %}
-          <div id="organization-ajax-messages"></div>
-          {% block tab_content %}{% endblock %}
-        </div>
-
-      </div>
-    </div>
-  </div>
-</section>
-
-{% endblock %}
+    </section>
+{% endblock content %}

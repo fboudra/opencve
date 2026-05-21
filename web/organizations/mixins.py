@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 
-from organizations.models import Membership, Organization
+from organizations.models import Membership
 
 
 class OrganizationRequiredMixin:

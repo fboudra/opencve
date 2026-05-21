@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% load opencve_extras %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags opencve_extras %}
 
 {% block title %}{{ request.resolver_match.url_name|humanize }} - {{ block.super }}{% endblock %}
-{% block navbar_title%}{{ request.resolver_match.url_name|humanize }}{% endblock %}
+
+{% block navbar_title %}{{ request.resolver_match.url_name|humanize }}{% endblock %}
 
 {% block content %}
 
@@ -20,4 +20,4 @@
   </div>
 </section>
 
-{% endblock %}
+{% endblock content %}

@@ -48,7 +48,7 @@ class UserTag(BaseModel):
         max_length=64,
         validators=[
             RegexValidator(
-                regex="^[a-zA-Z0-9\-_]+$",
+                regex=r"^[a-zA-Z0-9\-_]+$",
                 message="Only alphanumeric, dash and underscore characters are accepted",
             ),
         ],

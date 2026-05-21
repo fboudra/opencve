@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "auditlog",
     "crispy_forms",
-    "crispy_bootstrap3",
+    "crispy_bootstrap4",
     "debug_toolbar",
     "hijack",
     "hijack.contrib.admin",
@@ -167,7 +167,7 @@ STATIC_ROOT = "/app/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Template used by Django-Crispy
-CRISPY_TEMPLATE_PACK = "bootstrap3"
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 # Redirection page for authentication
 LOGIN_REDIRECT_URL = "home"

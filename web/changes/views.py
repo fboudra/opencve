@@ -41,7 +41,6 @@ class ChangeListView(LoginRequiredMixin, OrganizationIsMemberMixin, ListView):
 
         # Filter on user subscriptions
         if self.request.user.settings["activities_view"] == "subscriptions":
-
             vendors = self.request.current_organization.get_projects_vendors()
             if vendors:
                 query = query.filter(cve__vendors__has_any_keys=vendors)

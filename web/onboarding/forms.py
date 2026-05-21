@@ -4,7 +4,6 @@ from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Layout, Submit
 from django import forms
-from django.conf import settings
 
 from cves.constants import CVSS_SCORES, PRODUCT_SEPARATOR
 from cves.models import Product, Vendor
@@ -34,7 +33,7 @@ class OnboardingForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        super(OnboardingForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["organization"].widget.attrs["placeholder"] = "Acme"
         self.fields["organization"].help_text = (
             "The organization is the main place to manage members and projects. "

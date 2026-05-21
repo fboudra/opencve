@@ -259,12 +259,16 @@ def _normalize_subscriptions_payload(raw_value):
     vendors = (
         [raw_vendors]
         if isinstance(raw_vendors, str)
-        else list(raw_vendors) if isinstance(raw_vendors, (list, tuple)) else []
+        else list(raw_vendors)
+        if isinstance(raw_vendors, (list, tuple))
+        else []
     )
     products = (
         [raw_products]
         if isinstance(raw_products, str)
-        else list(raw_products) if isinstance(raw_products, (list, tuple)) else []
+        else list(raw_products)
+        if isinstance(raw_products, (list, tuple))
+        else []
     )
 
     vendors = sorted({str(v) for v in vendors})
@@ -507,9 +511,9 @@ def get_audit_log_filter_choices(entries_qs):
 
     resources_choices = [
         {
-            "key": f'{r["content_type__app_label"]}.{r["content_type__model"]}',
+            "key": f"{r['content_type__app_label']}.{r['content_type__model']}",
             "label": RESOURCE_LABELS.get(
-                f'{r["content_type__app_label"]}.{r["content_type__model"]}',
+                f"{r['content_type__app_label']}.{r['content_type__model']}",
                 r["content_type__model"].replace("_", " ").title(),
             ),
         }

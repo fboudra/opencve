@@ -9,12 +9,11 @@ import pytest
 AIRFLOW_HOME = os.path.dirname(os.path.dirname(__file__))
 os.environ["AIRFLOW_HOME"] = AIRFLOW_HOME
 
-from airflow import DAG
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.redis.hooks.redis import RedisHook
 from airflow.utils import db as airflow_db
-from airflow.utils.state import DagRunState
-from airflow.utils.types import DagRunType
+from airflow.sdk.exceptions import AirflowSkipException
+from airflow.utils.state import TaskInstanceState
 
 # Override Airflow configuration during tests
 os.environ["AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS"] = "False"
@@ -33,10 +32,15 @@ os.environ["AIRFLOW__OPENCVE__START_DATE_SUMMARIZE_REPORTS"] = "2024-01-01"
 os.environ["AIRFLOW__OPENCVE__NOTIFICATION_REQUEST_TIMEOUT"] = "5"
 
 os.environ["AIRFLOW__OPENCVE__DEVELOPMENT_MODE"] = "False"
-os.environ["AIRFLOW_CONN_OPENCVE_POSTGRES"] = (
-    "postgresql://opencve:opencve@localhost:5432/opencve"
+
+# Allow overriding database/redis connections via environment variables
+postgres_conn = os.getenv(
+    "AIRFLOW_CONN_OPENCVE_POSTGRES",
+    "postgresql://opencve:opencve@localhost:5432/opencve",
 )
-os.environ["AIRFLOW_CONN_OPENCVE_REDIS"] = "redis://localhost:6379"
+redis_conn = os.getenv("AIRFLOW_CONN_OPENCVE_REDIS", "redis://localhost:6379")
+os.environ["AIRFLOW_CONN_OPENCVE_POSTGRES"] = postgres_conn
+os.environ["AIRFLOW_CONN_OPENCVE_REDIS"] = redis_conn
 
 
 @pytest.fixture(autouse=True)
@@ -57,7 +61,7 @@ def process_markers(request, web_pg_hook, web_redis_hook):
         )
 
         tables = [r[0] for r in web_pg_hook.get_records(sql_query)]
-        web_pg_hook.run(f'TRUNCATE TABLE {",".join(tables)} RESTART IDENTITY CASCADE;')
+        web_pg_hook.run(f"TRUNCATE TABLE {','.join(tables)} RESTART IDENTITY CASCADE;")
 
     # Reset Redis database
     redis_db_marker = node.get_closest_marker("web_redis")
@@ -91,25 +95,31 @@ def open_file():
 
 @pytest.fixture(scope="function")
 def run_dag_task():
-    def _run_dag_task(task_fn, start, end, params={}):
-        with DAG(
-            dag_id="opencve",
-            schedule="@daily",
-            start_date=pendulum.datetime(2024, 1, 1, tz="UTC"),
-            params=params,
-        ) as dag:
-            task_fn(task_name=task_fn.function.__name__)
+    def _run_dag_task(task_fn, start, end, params=None):
+        if params is None:
+            params = {}
 
-        dagrun = dag.create_dagrun(
-            state=DagRunState.RUNNING,
-            execution_date=start,
-            data_interval=(start, end),
-            start_date=start,
-            run_type=DagRunType.MANUAL,
-        )
-        ti = dagrun.get_task_instance(task_id=task_fn.function.__name__)
-        ti.task = dag.get_task(task_id=task_fn.function.__name__)
-        ti.run(ignore_ti_state=True)
+        # Create a mock TaskInstance for state tracking
+        class MockTI:
+            state = TaskInstanceState.RUNNING
+            end_date = None
+
+        ti = MockTI()
+        # Call the task function directly - Airflow 3.1+ Task SDK requires API server
+        try:
+            task_fn.function(
+                data_interval_start=start,
+                data_interval_end=end,
+                params=params,
+            )
+            ti.state = TaskInstanceState.SUCCESS
+        except AirflowSkipException as e:
+            ti.state = TaskInstanceState.SKIPPED
+            # Re-raise the exception message as an INFO log so caplog captures it
+            import logging
+
+            logging.getLogger(__name__).info(str(e))
+        ti.end_date = pendulum.now("UTC")
         return ti
 
     return _run_dag_task

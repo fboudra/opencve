@@ -1,177 +1,242 @@
-{% load static %}
-{% load opencve_extras %}
+{% load opencve_extras static %}
 
 <div class="nav-tabs-custom nav-tabs-primary" id="cve-affected">
     <ul class="nav nav-tabs">
         <li class="active">
-            <a href="#mitre" data-toggle="tab"> <img src="{% static 'img/cve-icon.png' %}" style="margin-top: -2px; width: 32px;" class="provider-icon" alt="cve-icon" /> Mitre Data{% if cve.mitre_json and cve.mitre_json.containers.cna.affected %} <span class="nav-tab-has-data"></span>{% endif %}</a>
+            <a href="#mitre" data-toggle="tab">
+                <img
+                    src="{% static 'img/cve-icon.png' %}"
+                    style="margin-top: -2px; width: 32px"
+                    class="provider-icon"
+                    alt="cve-icon"
+                > Mitre Data{% if cve.mitre_json and cve.mitre_json.containers.cna.affected %}
+                    <span class="nav-tab-has-data"></span>{% endif %}</a>
         </li>
         <li>
-            <a href="#nvd" data-toggle="tab"> <img src="{% static 'img/nvd-icon.png' %}" style="margin-top: -2px; width: 32px;" class="provider-icon" alt="cve-icon" /> CPE Configurations{% if cve.nvd_json and cve.nvd_json.configurations %} <span class="nav-tab-has-data"></span>{% endif %}</a>
+            <a href="#nvd" data-toggle="tab">
+                <img
+                    src="{% static 'img/nvd-icon.png' %}"
+                    style="margin-top: -2px; width: 32px"
+                    class="provider-icon"
+                    alt="cve-icon"
+                > CPE Configurations{% if cve.nvd_json and cve.nvd_json.configurations %}
+                    <span class="nav-tab-has-data"></span>{% endif %}</a>
         </li>
         <li>
-            <a href="#redhat" data-toggle="tab"> <img src="{% static 'img/redhat-icon.png' %}" style="margin-top: -2px; width: 20px;" class="provider-icon" alt="cve-icon" /> Affected Packages{% if cve.redhat_json and cve.redhat_json.affected_release %} <span class="nav-tab-has-data"></span>{% endif %}</a>
+            <a href="#redhat" data-toggle="tab">
+                <img
+                    src="{% static 'img/redhat-icon.png' %}"
+                    style="margin-top: -2px; width: 20px"
+                    class="provider-icon"
+                    alt="cve-icon"
+                > Affected Packages{% if cve.redhat_json and cve.redhat_json.affected_release %}
+                    <span class="nav-tab-has-data"></span>{% endif %}</a>
         </li>
         <li>
-            <a href="#enrichment" data-toggle="tab"> <img src="{% static 'img/opencve_32.png' %}" style="margin-top: -2px; width: 20px;" class="provider-icon" alt="cve-icon" /> OpenCVE Enrichment{% if cve.enrichment_json and cve.enrichment_json.affected or cve.enrichment_json and cve.enrichment_json.vendors %} <span class="nav-tab-has-data"></span>{% endif %}</a>
+            <a href="#enrichment" data-toggle="tab">
+                <img
+                    src="{% static 'img/opencve_32.png' %}"
+                    style="margin-top: -2px; width: 20px"
+                    class="provider-icon"
+                    alt="cve-icon"
+                > OpenCVE
+                Enrichment{% if cve.enrichment_json and cve.enrichment_json.affected or cve.enrichment_json and cve.enrichment_json.vendors %}
+                    <span class="nav-tab-has-data"></span>{% endif %}</a>
         </li>
     </ul>
     <div class="tab-content">
         <div class="tab-pane active" id="mitre">
             {% if cve.mitre_json and cve.mitre_json.containers.cna.affected %}
-            <p class="text-muted small mb-3">
-              <strong>Default status</strong> is the baseline for the product, each <strong>version</strong> can override it (e.g. patched versions marked unaffected).
-            </p>
-            <div id="mitre-affected-wrapper" class="mitre-affected-wrapper" data-initial-rows="5">
-              <table class="table table-condensed" id="mitre-affected-table">
-                <thead>
-                  <tr>
-                    <th>Vendor</th>
-                    <th>Product</th>
-                    <th>Default status</th>
-                    <th>Versions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                {% for affected in cve.mitre_json.containers.cna.affected %}
-                  <tr class="mitre-affected-row">
-                    <td>{{ affected.vendor }}</td>
-                    <td>{{ affected.product }}</td>
-                    <td>
-                      <span class="label
-                        {% if affected.defaultStatus|default:"affected"|slugify == 'affected' %}label-danger
-                        {% elif affected.defaultStatus|default:"affected"|slugify == 'unaffected' %}label-success
-                        {% else %}label-default{% endif %}">
-                        {{ affected.defaultStatus|default:"affected" }}
-                      </span>
-                    </td>
-                    <td>
-                      {% if affected.versions %}
-                        <table class="table table-sm table-borderless mb-0 small">
-                          <thead class="table-light">
+                <p class="text-muted small mb-3">
+                    <strong>Default status</strong> is the baseline for the product, each <strong>version</strong> can
+                    override it (e.g. patched versions marked unaffected).
+                </p>
+                <div id="mitre-affected-wrapper" class="mitre-affected-wrapper" data-initial-rows="5">
+                    <table class="table table-condensed" id="mitre-affected-table">
+                        <thead>
                             <tr>
-                              <th>Version</th>
-                              <th>Status</th>
-                              <th>Constraints</th>
+                                <th>Vendor</th>
+                                <th>Product</th>
+                                <th>Default status</th>
+                                <th>Versions</th>
                             </tr>
-                          </thead>
-                          <tbody>
-                          {% for version in affected.versions %}
-                            <tr>
-                              <td class="text-break"><code>{{ version.version }}</code></td>
-                              <td>
-                                <span class="label {% if version.status|default:''|slugify == 'affected' %}label-danger{% elif version.status|default:''|slugify == 'unaffected' %}label-success{% else %}label-default{% endif %}">{{ version.status }}</span>
-                              </td>
-                              <td class="mitre-constraints-cell">
-                                <div class="mitre-constraints-content text-muted">
-                                {% if version.lessThan %}< {{ version.lessThan }}{% endif %}
-                                {% if version.lessThanOrEqual %}≤ {{ version.lessThanOrEqual }}{% endif %}
-                                {% if not version.lessThan and not version.lessThanOrEqual %}—{% endif %}
-                                </div>
-                              </td>
-                            </tr>
-                          {% endfor %}
-                          </tbody>
-                        </table>
-                      {% else %}
-                        <span class="text-muted">—</span>
-                      {% endif %}
-                    </td>
-                  </tr>
-                {% endfor %}
-                </tbody>
-              </table>
-              <div class="mitre-affected-show-more-wrap" id="mitre-affected-show-more-wrap" style="display: none;">
-                <button type="button"
-                        class="mitre-affected-show-more-btn"
-                        id="mitre-affected-show-more-btn"
-                        aria-expanded="false"
-                        aria-label="Show more affected products">
-                  <span class="mitre-affected-show-more-inner">
-                    <span class="mitre-affected-show-more-label mitre-affected-show-more-label--more">Show more</span>
-                    <span class="mitre-affected-show-more-label mitre-affected-show-more-label--less">Show less</span>
-                    <span class="mitre-affected-show-more-icon mitre-affected-show-more-icon--down" aria-hidden="true"><i class="fa fa-chevron-down"></i></span>
-                    <span class="mitre-affected-show-more-icon mitre-affected-show-more-icon--up" aria-hidden="true"><i class="fa fa-chevron-up"></i></span>
-                  </span>
-                </button>
-              </div>
-            </div>
+                        </thead>
+                        <tbody>
+                            {% for affected in cve.mitre_json.containers.cna.affected %}
+                                <tr class="mitre-affected-row">
+                                    <td>{{ affected.vendor }}</td>
+                                    <td>{{ affected.product }}</td>
+                                    <td>
+                                        <span
+                                            class="
+                                                label
+                                                {% if affected.defaultStatus|default:"affected"|slugify == 'affected' %}label-danger
+                                                {% elif affected.defaultStatus|default:"affected"|slugify == 'unaffected' %}label-success
+                                                {% else %}label-default{% endif %}
+                                            "
+                                        >
+                                            {{ affected.defaultStatus|default:"affected" }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if affected.versions %}
+                                            <table class="table table-sm table-borderless mb-0 small">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Version</th>
+                                                        <th>Status</th>
+                                                        <th>Constraints</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for version in affected.versions %}
+                                                        <tr>
+                                                            <td class="text-break">
+                                                                <code>{{ version.version }}</code>
+                                                            </td>
+                                                            <td>
+                                                                <span
+                                                                    class="label {% if version.status|default:''|slugify == 'affected' %}label-danger{% elif version.status|default:''|slugify == 'unaffected' %}label-success{% else %}label-default{% endif %}"
+                                                                >{{ version.status }}</span>
+                                                            </td>
+                                                            <td class="mitre-constraints-cell">
+                                                                <div class="mitre-constraints-content text-muted">
+                                                                    {% if version.lessThan %}<
+                                                                        {{ version.lessThan }}{% endif %}
+                                                                    {% if version.lessThanOrEqual %}≤
+                                                                        {{ version.lessThanOrEqual }}{% endif %}
+                                                                    {% if not version.lessThan and not version.lessThanOrEqual %}—{% endif %}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="mitre-affected-show-more-wrap" id="mitre-affected-show-more-wrap" style="display: none">
+                        <button
+                            type="button"
+                            class="mitre-affected-show-more-btn"
+                            id="mitre-affected-show-more-btn"
+                            aria-expanded="false"
+                            aria-label="Show more affected products"
+                        >
+                            <span class="mitre-affected-show-more-inner">
+                                <span class="mitre-affected-show-more-label mitre-affected-show-more-label--more"
+                                >Show more</span>
+                                <span class="mitre-affected-show-more-label mitre-affected-show-more-label--less"
+                                >Show less</span>
+                                <span
+                                    class="mitre-affected-show-more-icon mitre-affected-show-more-icon--down"
+                                    aria-hidden="true"
+                                ><i class="fa fa-chevron-down"></i></span>
+                                <span
+                                    class="mitre-affected-show-more-icon mitre-affected-show-more-icon--up"
+                                    aria-hidden="true"
+                                ><i class="fa fa-chevron-up"></i></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
             {% endif %}
         </div>
 
         <div class="tab-pane" id="nvd">
             {% if cve.nvd_json and cve.nvd_json.configurations %}
-
-            {% for conf in cve.nvd_json.configurations %}
-            <p><strong>Configuration {{ forloop.counter }}</strong> <a class="pointer config-toggle"
-                                                                       id="config-{{ forloop.counter }}">[-]</a></p>
-            <table class="table table-configuration" id="config-{{ forloop.counter }}-table">
-                <tr>
-                    {% if conf.operator == "AND" %}
-                    <td class="col-md-1 rowspaned">AND</td>
-                    {% endif %}
-                    <td class="col-md-11 and">
-                        {% for node in conf.nodes %}
-                        <table class="table table-bordered no-margin-bottom">
-                            {% for cpe in node.cpeMatch %}
-                            <tr>
-                                {% if forloop.counter == 1 and node.cpeMatch|length > 1 %}
-                                <td class="col-md-1 rowspaned" rowspan="{{ node.cpeMatch|length }}">OR</td>
-                                {% endif %}
-                                <td>{{ cpe.criteria }}</td>
-                            </tr>
-                            {% endfor %}
-                        </table>
-                        {% endfor %}
-                    </td>
-                </tr>
-            </table>
-            <hr/>
-            {% endfor %}
-
+                {% for conf in cve.nvd_json.configurations %}
+                    <p>
+                        <strong>Configuration {{ forloop.counter }}</strong> <a
+                            class="pointer config-toggle"
+                            id="config-{{ forloop.counter }}"
+                        >[-]</a>
+                    </p>
+                    <table class="table table-configuration" id="config-{{ forloop.counter }}-table">
+                        <tr>
+                            {% if conf.operator == "AND" %}
+                                <td class="col-md-1 rowspaned">AND</td>
+                            {% endif %}
+                            <td class="col-md-11 and">
+                                {% for node in conf.nodes %}
+                                    <table class="table table-bordered no-margin-bottom">
+                                        {% for cpe in node.cpeMatch %}
+                                            <tr>
+                                                {% if forloop.counter == 1 and node.cpeMatch|length > 1 %}
+                                                    <td class="col-md-1 rowspaned" rowspan="{{ node.cpeMatch|length }}">
+                                                        OR
+                                                    </td>
+                                                {% endif %}
+                                                <td>{{ cpe.criteria }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    </table>
+                    <hr>
+                {% endfor %}
             {% else %}
-            <p class="text-muted"><em>No data.</em></p>
+                <p class="text-muted"><em>No data.</em></p>
             {% endif %}
         </div>
         <div class="tab-pane" id="redhat">
             {% if cve.redhat_json and cve.redhat_json.affected_release %}
-            {% regroup cve.redhat_json.affected_release by product_name as packages %}
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <th>Package</th>
-                    <th>CPE</th>
-                    <th>Advisory</th>
-                    <th>Released Date</th>
-                </thead>
-                <tbody>
-                    {% for package in packages %}
-                    <tr>
-                        <td colspan="4" class="td-grouper"><strong>{{ package.grouper }}</strong></td>
-                    </tr>
-                    {% for release in package.list %}
-                    <tr>
-                        <td>{{ release.package }}</td>
-                        <td>{{ release.cpe }}</td>
-                        <td><a href="https://access.redhat.com/errata/{{ release.advisory }}" target="_blank">{{ release.advisory }}</a></td>
-                        <td>{{ release.release_date }}</td>
-                    </tr>
-                    {% endfor %}
-                    {% endfor %}
-                </tbody>
-            </table>
+                {% regroup cve.redhat_json.affected_release by product_name as packages %}
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <th>Package</th>
+                        <th>CPE</th>
+                        <th>Advisory</th>
+                        <th>Released Date</th>
+                    </thead>
+                    <tbody>
+                        {% for package in packages %}
+                            <tr>
+                                <td colspan="4" class="td-grouper"><strong>{{ package.grouper }}</strong></td>
+                            </tr>
+                            {% for release in package.list %}
+                                <tr>
+                                    <td>{{ release.package }}</td>
+                                    <td>{{ release.cpe }}</td>
+                                    <td>
+                                        <a
+                                            href="https://access.redhat.com/errata/{{ release.advisory }}"
+                                            target="_blank"
+                                        >{{ release.advisory }}</a>
+                                    </td>
+                                    <td>{{ release.release_date }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
             {% else %}
-            <p class="text-muted"><em>No data.</em></p>
+                <p class="text-muted"><em>No data.</em></p>
             {% endif %}
         </div>
         <div class="tab-pane" id="enrichment">
-          {% if cve.enrichment_json and cve.enrichment_json.affected or cve.enrichment_json and cve.enrichment_json.vendors %}
-            {% include "cves/includes/enrichment.html" %}
-            <p class="text-muted small"><em>
-              Found an issue or want to improve our Enrichment? You can suggest it directly by opening an issue on our <a href="https://github.com/opencve/opencve-enrichment/" target="_blank" rel="noopener">dedicated GitHub repository <i class="fa fa-external-link"></i></a>.
-            </em></p>
-          {% else %}
-            <p class="text-muted"><em>No data available yet.</em></p>
-          {% endif %}
+            {% if cve.enrichment_json and cve.enrichment_json.affected or cve.enrichment_json and cve.enrichment_json.vendors %}
+                {% include "cves/includes/enrichment.html" %}
+                <p class="text-muted small">
+                    <em>
+                        Found an issue or want to improve our Enrichment? You can suggest it directly by opening an
+                        issue on our <a
+                            href="https://github.com/opencve/opencve-enrichment/"
+                            target="_blank"
+                            rel="noopener"
+                        >dedicated GitHub repository <i class="fa fa-external-link"></i></a>.
+                    </em>
+                </p>
+            {% else %}
+                <p class="text-muted"><em>No data available yet.</em></p>
+            {% endif %}
         </div>
     </div>
 </div>

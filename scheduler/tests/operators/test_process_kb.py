@@ -52,7 +52,6 @@ def test_process_kb_operator_find_commits(_, caplog, tests_path, tmp_path_factor
     repo.commit(["c/"], hour=2, minute=30)
 
     with patch("includes.utils.KB_LOCAL_REPO", repo.repo_path):
-
         # No commit between 12:00 and 12:59:59
         operator = ProcessKbOperator(task_id="parse_test")
         operator.execute(

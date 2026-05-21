@@ -171,7 +171,6 @@ class CveListView(ListView):
             context["title"] = humanize(product)
 
         if self.request.user.is_authenticated:
-
             # List the user tags
             context["user_tags"] = [
                 t.name for t in UserTag.objects.filter(user=self.request.user).all()
@@ -416,6 +415,9 @@ class CveDetailView(DetailView):
         context = super().get_context_data(**kwargs)
 
         cve = context["cve"]
+
+        # Preload all JSON data sources to avoid repeated file reads
+        cve.preload_json()
 
         # JSON context (KB, Mitre...)
         context.update(self.build_json_context(cve))

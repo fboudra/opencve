@@ -1,6 +1,6 @@
 <tr>
     {% if not hide_type %}
-    <td class="col-md-2">Weaknesses</td>
+        <td class="col-md-2">Weaknesses</td>
     {% endif %}
     <td class="col-md-5">{{ event.details.removed|join:'<br/>'|safe }}</td>
     <td class="col-md-5">{{ event.details.added|join:'<br/>'|safe }}</td>

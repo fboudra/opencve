@@ -9,7 +9,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count, Exists, OuterRef, Prefetch, Q
 from django.http import Http404, JsonResponse
-from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
@@ -222,7 +221,6 @@ class ProjectVulnerabilitiesView(
                 return base_queryset
 
             else:
-
                 # Apply the search query to the base queryset
                 search_queryset = search.query
                 return base_queryset & search_queryset
@@ -445,7 +443,6 @@ class ReportView(
         changes = {}
 
         for db_change in report.changes.all():
-
             # A CVE can have several changes in one day
             if db_change.cve not in changes:
                 score = db_change.cve.cvssV3_1["score"] if db_change.cve.cvssV3_1 else 0

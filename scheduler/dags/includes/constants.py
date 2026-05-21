@@ -326,6 +326,4 @@ deleted_changes AS (
 DELETE FROM opencve_reports r
 USING expired e
 WHERE r.id = e.id;
-""".format(
-    expired_select=REPORTS_EXPIRED_SELECT.strip()
-)
+""".format(expired_select=REPORTS_EXPIRED_SELECT.strip())

@@ -1,18 +1,18 @@
 {% load opencve_extras %}
 <tr>
     {% if not hide_type %}
-    <td class="col-md-2">Vendors & Products</td>
+        <td class="col-md-2">Vendors & Products</td>
     {% endif %}
     <td class="col-md-5">
         {% for item in event.details.removed %}
-        {{ item|remove_product_separator|humanize }}
-        <br />
+            {{ item|remove_product_separator|humanize }}
+            <br>
         {% endfor %}
     </td>
     <td class="col-md-5">
         {% for item in event.details.added %}
-        {{ item|remove_product_separator|humanize }}
-        <br />
+            {{ item|remove_product_separator|humanize }}
+            <br>
         {% endfor %}
     </td>
 </tr>

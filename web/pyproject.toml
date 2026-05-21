@@ -1,3 +1,94 @@
-[tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "opencve.conf.settings"
-python_files = ["test_*"]
+[build-system]
+build-backend = "hatchling.build"
+requires = [ "hatchling" ]
+
+[project]
+name = "opencve-web"
+version = "2.4.0"
+description = "OpenCVE web application"
+requires-python = ">=3.11"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+  "crispy-bootstrap4==2026.2",
+  "django[argon2,bcrypt]==5.2.14",
+  "django-allauth[mfa,openid,socialaccount]==65.17.0",
+  "django-auditlog==3.4.1",
+  "django-crispy-forms==2.6",
+  "django-debug-toolbar==6.3.0",
+  "django-environ==0.13.0",
+  "django-extensions==4.1",
+  "django-hijack==3.7.8",
+  "django-prometheus==2.4.1",
+  "djangorestframework==3.17.1",
+  "drf-nested-routers==0.95.0",
+  "gunicorn==26.0.0",
+  "nested-lookup==0.2.25",
+  "psycopg2-binary==2.9.12",
+  "pyparsing==3.3.2",
+]
+
+[dependency-groups]
+dev = [
+  "bandit==1.9.4",
+  "beautifulsoup4==4.14.3",
+  "codespell==2.4.2",
+  "djade==1.9.0",
+  "django-upgrade==1.3.0",
+  "djangofmt==0.2.6",
+  "djlint==1.36.4",
+  "freezegun==1.5.5",
+  "pre-commit==4.5.1",
+  "pylint==4.0.5",
+  "pylint-django==2.7.0",
+  "pyproject-fmt==2.21.0",
+  "pytest==9.0.3",
+  "pytest-django==4.12.0",
+  "pyupgrade==3.21.2",
+  "ruff==0.15.9",
+]
+
+[tool.hatch]
+build.targets.wheel.packages = [ "." ]
+
+[tool.ruff]
+extend-exclude = [
+  "web/changes/migrations/*.py",
+  "web/cves/migrations/*.py",
+  "web/dashboards/migrations/*.py",
+  "web/organizations/migrations/*.py",
+  "web/projects/migrations/*.py",
+  "web/users/migrations/*.py",
+  "web/views/migrations/*.py",
+]
+lint.ignore = [
+  "E402", # Module level import not at top of file
+  "F841", # Local variable is assigned to but never used
+]
+lint.isort.force-single-line = true
+
+[tool.pyproject-fmt]
+keep_full_version = true
+max_supported_python = "3.12"
+
+[tool.mypy]
+python_version = "3.11"
+check_untyped_defs = true
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+
+[tool.pytest]
+ini_options.DJANGO_SETTINGS_MODULE = "opencve.conf.settings"
+ini_options.python_files = [ "test_*" ]
+ini_options.django_find_project = false
+
+[tool.djangofmt]
+profile = "django"
+
+[tool.djlint]
+ignore = "D018,H008,H021,H031,T003"

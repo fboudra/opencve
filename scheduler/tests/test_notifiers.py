@@ -1,6 +1,5 @@
 from unittest.mock import patch, AsyncMock, MagicMock
 import pathlib
-import json
 
 import pendulum
 import pytest
@@ -352,9 +351,10 @@ def test_email_notifier_template_context_created_by_and_unsubscribe_url(
         },
     )
 
-    with patch("includes.notifiers.KB_LOCAL_REPO", repo.repo_path), patch(
-        "includes.notifiers.conf"
-    ) as mock_conf:
+    with (
+        patch("includes.notifiers.KB_LOCAL_REPO", repo.repo_path),
+        patch("includes.notifiers.conf") as mock_conf,
+    ):
         mock_conf.get.return_value = "https://opencve.example.com"
         context = notif.get_template_context()
 
@@ -470,11 +470,14 @@ async def test_webhook_notifier_send_success(tests_path, tmp_path_factory):
     repo.commit(["0001/CVE-2024-6962.v1.json"], hour=1, minute=00)
 
     semaphore = asyncio.Semaphore(10)
-    session = AsyncMock()
-    mock_response = AsyncMock()
+    session = MagicMock()
+    mock_response = MagicMock()
     mock_response.status = 200
     mock_response.json = AsyncMock(return_value={"status": "ok"})
-    session.post.return_value.__aenter__.return_value = mock_response
+    ctx = AsyncMock()
+    ctx.__aenter__.return_value = mock_response
+    ctx.__aexit__.return_value = None
+    session.post.return_value = ctx
 
     notifier = WebhookNotifier(
         semaphore=semaphore,
@@ -528,7 +531,7 @@ async def test_webhook_notifier_send_connection_error(tests_path, tmp_path_facto
     repo.commit(["0001/CVE-2024-6962.v1.json"], hour=1, minute=00)
 
     semaphore = asyncio.Semaphore(10)
-    session = AsyncMock()
+    session = MagicMock()
 
     # Create ClientConnectorError
     connection_key = MagicMock()
@@ -585,7 +588,7 @@ async def test_webhook_notifier_send_timeout_error(tests_path, tmp_path_factory)
     repo.commit(["0001/CVE-2024-6962.v1.json"], hour=1, minute=00)
 
     semaphore = asyncio.Semaphore(10)
-    session = AsyncMock()
+    session = MagicMock()
     session.post.side_effect = asyncio.TimeoutError()
 
     notifier = WebhookNotifier(
@@ -787,11 +790,14 @@ async def test_slack_notifier_send_success(tests_path, tmp_path_factory):
     repo.commit(["0001/CVE-2024-6962.v1.json"], hour=1, minute=00)
 
     semaphore = asyncio.Semaphore(10)
-    session = AsyncMock()
-    mock_response = AsyncMock()
+    session = MagicMock()
+    mock_response = MagicMock()
     mock_response.status = 200
     mock_response.text = AsyncMock(return_value="ok")
-    session.post.return_value.__aenter__.return_value = mock_response
+    ctx = AsyncMock()
+    ctx.__aenter__.return_value = mock_response
+    ctx.__aexit__.return_value = None
+    session.post.return_value = ctx
 
     notifier = SlackNotifier(
         semaphore=semaphore,
@@ -843,11 +849,14 @@ async def test_slack_notifier_send_error(tests_path, tmp_path_factory):
     repo.commit(["0001/CVE-2024-6962.v1.json"], hour=1, minute=00)
 
     semaphore = asyncio.Semaphore(10)
-    session = AsyncMock()
-    mock_response = AsyncMock()
+    session = MagicMock()
+    mock_response = MagicMock()
     mock_response.status = 400
     mock_response.text = AsyncMock(return_value="invalid_payload")
-    session.post.return_value.__aenter__.return_value = mock_response
+    ctx = AsyncMock()
+    ctx.__aenter__.return_value = mock_response
+    ctx.__aexit__.return_value = None
+    session.post.return_value = ctx
 
     notifier = SlackNotifier(
         semaphore=semaphore,
@@ -896,7 +905,7 @@ async def test_slack_notifier_send_exception(tests_path, tmp_path_factory):
     repo.commit(["0001/CVE-2024-6962.v1.json"], hour=1, minute=00)
 
     semaphore = asyncio.Semaphore(10)
-    session = AsyncMock()
+    session = MagicMock()
     session.post.side_effect = Exception("Network error")
 
     notifier = SlackNotifier(

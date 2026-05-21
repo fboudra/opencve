@@ -1,6 +1,6 @@
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Button, Div, Field, Layout, Submit
+from crispy_forms.layout import HTML, Layout, Submit
 from django import forms
 from django.conf import settings
 from django.db.models import Q
@@ -24,13 +24,13 @@ class ProjectForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
-        super(ProjectForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Add help text to name field only when editing
         if self.instance and not self.instance._state.adding:
-            self.fields["name"].help_text = (
-                "Renaming the project will break any external links to it, as the URL changes."
-            )
+            self.fields[
+                "name"
+            ].help_text = "Renaming the project will break any external links to it, as the URL changes."
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -75,7 +75,7 @@ class NotificationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
         self.project = kwargs.pop("project")
-        super(NotificationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # Hide "Enabled" on create; on edit, hide for email until confirmation
         # Use _state.adding because UUID primary key is set before save()
         if self.instance._state.adding:

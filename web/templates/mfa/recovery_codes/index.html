@@ -15,6 +15,6 @@
 
         {% if unused_codes %}
             {% url 'mfa_download_recovery_codes' as download_url %}
-            <a href="{{ download_url }}" class="btn btn-primary pull-right">Download codes</a>
+            <a href="{{ download_url }}" class="btn btn-primary float-right">Download codes</a>
         {% endif %}
-{% endblock %}
+{% endblock content_settings %}

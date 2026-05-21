@@ -61,7 +61,7 @@ class TagEditView(
         )
 
     def get_form(self, form_class=None):
-        form = super(TagEditView, self).get_form()
+        form = super().get_form()
         form.fields["name"].disabled = True
         return form
 

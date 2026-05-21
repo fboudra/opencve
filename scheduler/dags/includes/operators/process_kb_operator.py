@@ -1,6 +1,6 @@
 import re
 
-from airflow.models.baseoperator import BaseOperator
+from airflow.sdk.bases.operator import BaseOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from git.objects.commit import Commit
 
@@ -23,7 +23,7 @@ class ProcessKbOperator(BaseOperator):
             return
 
         # Check if the file is a CVE file
-        file_regex = "^\d{4}/CVE-.*\.json$"
+        file_regex = r"^\d{4}/CVE-.*\.json$"
         if not re.match(file_regex, handler.path):
             self.log.info("Skipping %s (regex not matched)", handler.path)
             return
@@ -49,7 +49,6 @@ class ProcessKbOperator(BaseOperator):
         )
 
         for commit in commits:
-
             # Ignore commits that are marked with [ignore] in the message
             if "[ignore]" in commit.message:
                 self.log.info("Ignoring commit %s due to ignore flag", commit)

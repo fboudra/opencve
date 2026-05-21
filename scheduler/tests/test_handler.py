@@ -40,7 +40,7 @@ def test_diff_handler_is_new_file(tests_path, tmp_path_factory):
     date = pendulum.datetime(2024, 1, 1, 2, 0, tz="UTC")
     test_repo.repo.git.add(A=True)
     commit = test_repo.repo.index.commit(
-        f"Updates for 2:0",
+        "Updates for 2:0",
         author=git.Actor("opencve", "opencve@example.com"),
         committer=git.Actor("opencve", "opencve@example.com"),
         commit_date=date,
@@ -101,7 +101,7 @@ def test_diff_handler_format_cve(tests_path, tmp_path_factory):
             "created": "2024-01-01T00:00:00+00:00",
             "updated": "2024-01-01T00:00:00+00:00",
             "file_path": "2024/CVE-2024-6962.v1.json",
-            "commit_hash": "06243efa271b991fc5a9107c6ec7239dc73c08c4",  # predictable
+            "commit_hash": commit.hexsha,
             "event_types": [
                 "description",
                 "title",

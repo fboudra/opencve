@@ -14,6 +14,6 @@ class ActivitiesViewForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        super(ActivitiesViewForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_show_labels = False

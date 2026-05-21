@@ -1,7 +1,7 @@
 import pendulum
 from airflow import DAG
 from airflow.configuration import conf
-from airflow.operators.python import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
 
 from includes.tasks.reports import clean_reports
 

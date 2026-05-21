@@ -1,12 +1,12 @@
 import logging
 import pathlib
-import json
 import uuid
 import time
 
 from airflow.configuration import conf
-from airflow.decorators import task
-from airflow.exceptions import AirflowSkipException, AirflowConfigException
+from airflow.sdk import task
+from airflow._shared.configuration.exceptions import AirflowConfigException
+from airflow.sdk.exceptions import AirflowSkipException
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.redis.hooks.redis import RedisHook
 from psycopg2.errors import ForeignKeyViolation
@@ -205,7 +205,7 @@ def summarize_reports(**context):
     prompt_path = (
         pathlib.Path(__file__).parent.parent / "data" / "summarize_reports.prompt"
     )
-    with open(prompt_path, "r") as f:
+    with open(prompt_path) as f:
         system_prompt = f.read()
 
     for report in reports:

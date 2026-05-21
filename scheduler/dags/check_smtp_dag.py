@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from airflow import DAG
-from airflow.models.param import Param
+from airflow.sdk.definitions.param import Param
 
 from includes.tasks.smtp import run
 

@@ -14,7 +14,7 @@ from users.models import User, UserTag
 
 class LoginForm(BaseLoginForm):
     def __init__(self, *args, **kwargs):
-        super(LoginForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields["login"].widget.attrs.update(
             {"placeholder": "Username or Email", "autofocus": True}
@@ -31,7 +31,7 @@ class LoginForm(BaseLoginForm):
 
 class RegisterForm(SignupForm):
     def __init__(self, *args, **kwargs):
-        super(RegisterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields["username"].widget.attrs.update(
             {"placeholder": "Username", "autofocus": True}
@@ -62,7 +62,7 @@ class ProfileChangeForm(forms.ModelForm):
         fields = ["first_name", "last_name"]
 
     def __init__(self, *args, **kwargs):
-        super(ProfileChangeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             "first_name",
@@ -76,7 +76,7 @@ class ProfileChangeForm(forms.ModelForm):
 
 class PasswordChangeForm(BasePasswordChangeForm):
     def __init__(self, *args, **kwargs):
-        super(PasswordChangeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             "old_password",
@@ -91,7 +91,7 @@ class PasswordChangeForm(BasePasswordChangeForm):
 
 class PasswordResetForm(ResetPasswordForm):
     def __init__(self, *args, **kwargs):
-        super(PasswordResetForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["email"].widget.attrs.update({"placeholder": "Email"})
         self.helper = FormHelper()
         self.helper.form_show_labels = False
@@ -103,7 +103,7 @@ class PasswordResetForm(ResetPasswordForm):
 
 class SetPasswordForm(ResetPasswordKeyForm):
     def __init__(self, *args, **kwargs):
-        super(SetPasswordForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["password1"].widget.attrs.update({"placeholder": "Password"})
         self.fields["password2"].widget.attrs.update(
             {"placeholder": "Confirm Password"}
@@ -121,7 +121,7 @@ class SetPasswordForm(ResetPasswordKeyForm):
 
 class CustomSocialSignupForm(SocialSignupForm):
     def __init__(self, *args, **kwargs):
-        super(CustomSocialSignupForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_action = reverse("socialaccount_signup")
         self.helper.layout = Layout(
@@ -131,7 +131,7 @@ class CustomSocialSignupForm(SocialSignupForm):
 
     @transaction.atomic
     def save(self, request):
-        user = super(CustomSocialSignupForm, self).save(request)
+        user = super().save(request)
         user.email = self.initial["email"]
         user.save()
         return user
@@ -144,7 +144,7 @@ class UserTagForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
-        super(UserTagForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper = FormHelper()
         self.helper.layout = Layout(

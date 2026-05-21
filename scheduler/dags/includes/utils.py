@@ -2,7 +2,6 @@ import json
 import pathlib
 import time
 from logging import Logger
-from typing import Dict, List, Optional, Tuple
 
 import more_itertools
 
@@ -109,7 +108,6 @@ def list_changes_by_project(changes, subscriptions):
     """
     projects_changes = {}
     for project, subscriptions in subscriptions.items():
-
         # Skip the project if no subscription
         if not subscriptions:
             continue
@@ -148,13 +146,13 @@ def group_notifications_by_project(records, subscriptions):
     return projects_notifications
 
 
-def get_dates_from_context(context: Dict) -> Tuple[DateTime, DateTime]:
+def get_dates_from_context(context: dict) -> tuple[DateTime, DateTime]:
     start = context.get("data_interval_start")
     end = context.get("data_interval_end").subtract(seconds=1)
     return start, end
 
 
-def list_commits(logger: Logger, start: DateTime, end: DateTime) -> List[Commit]:
+def list_commits(logger: Logger, start: DateTime, end: DateTime) -> list[Commit]:
     logger.info("Reading %s repository", KB_LOCAL_REPO)
     repo_path = pathlib.Path(KB_LOCAL_REPO)
 
@@ -263,7 +261,7 @@ def call_llm(api_key, api_url, model, messages, logger):
     def _handle_retry(attempt, error_type, error):
         if attempt < max_retries:
             logger.info(f"{error_type} (attempt {attempt}/{max_retries}): {error}")
-            logger.info(f"Retrying in 5 seconds...")
+            logger.info("Retrying in 5 seconds...")
             time.sleep(5)
         else:
             logger.error(f"Failed to call LLM after {max_retries} attempts")
@@ -297,7 +295,7 @@ def format_epss_score(score: float) -> str:
     return f"{score * 100:.0f}%"
 
 
-def read_cve_from_kb(cve_id: str) -> Dict:
+def read_cve_from_kb(cve_id: str) -> dict:
     """
     This function reads the CVE data from the KB local repo and
     build a payload for the LLM.
